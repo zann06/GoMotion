@@ -14,7 +14,8 @@
 - [x] Deterministic simulation clock and seeded driver assigner.
 - [x] `dart format .`, `flutter analyze`, and `flutter test` pass (45 tests).
 - [x] CI workflow runs format, analyze, and test on push and pull request.
-- [x] Android manifest requests no `INTERNET` or location permission.
+- [x] Release manifest declares no `INTERNET` or location permission; only the
+      debug overlay adds `INTERNET`, for the Flutter hot-reload tooling.
 
 ## Product and design
 - [ ] GoMotion name/tagline and original mark are used consistently.
@@ -39,7 +40,7 @@
 - [ ] State transitions validated.
 - [ ] Duplicate booking/payment/activity prevented.
 - [ ] Cancellation and reset invalidate stale timers.
-- [ ] Deterministic driver selection verified.
+- [x] Deterministic driver selection verified (`test/simulation/simulation_test.dart`).
 
 ## Quality
 - [ ] Reduced motion and accessibility labels.
