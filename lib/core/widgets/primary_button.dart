@@ -84,7 +84,7 @@ class _PrimaryButtonState extends ConsumerState<PrimaryButton> {
                 boxShadow: _enabled
                     ? const [
                         BoxShadow(
-                          color: Color(0x334F46E5),
+                          color: Color(0x331D4ED8),
                           blurRadius: 16,
                           offset: Offset(0, 6),
                         ),

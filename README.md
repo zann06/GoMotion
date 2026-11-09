@@ -8,7 +8,7 @@ GoMotion is an offline-first, fictional ride-hailing experience simulator for An
 ## Product principles
 - Fully offline: no backend, API, cloud database, authentication server, remote maps, or remote images.
 - Honest simulation: all drivers, fares, wallets, orders, ratings, and receipts are fictional demo data.
-- Original identity: electric indigo, blue, and violet; no copied operator branding or proprietary assets.
+- Original identity: deep blue with an electric-blue and restrained violet accent; no copied operator branding or proprietary assets.
 - Complete local interactions: no dead-end buttons; every visible action has a defined local outcome.
 - Maintainable code: feature-first organization, clean boundaries, Riverpod state management, and testable state machines.
 

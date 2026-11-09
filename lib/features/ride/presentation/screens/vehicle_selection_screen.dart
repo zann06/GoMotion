@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_constants.dart';
+import '../../../../core/constants/app_icons.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/constants/app_typography.dart';
 import '../../../../core/navigation/app_routes.dart';
@@ -18,6 +19,7 @@ import '../../../../domain/entities/fixtures.dart';
 import '../../../../domain/entities/ride.dart';
 import '../../../../domain/repositories/fixture_repository.dart';
 import '../../../../domain/services/fare_engine.dart';
+import '../../../../domain/services/route_geometry.dart';
 import '../../../ride/application/ride_controller.dart';
 
 /// Vehicle selection with live fare estimates.
@@ -102,6 +104,15 @@ class _VehicleBodyState extends ConsumerState<_VehicleBody> {
       ride.destination.point,
     );
 
+    // Preview the currently selected vehicle on the map. Re-selecting a vehicle
+    // rebuilds this screen, so the marker icon follows the choice live.
+    final previewRoute = RouteGeometry.between(
+      ride.pickup.point,
+      ride.destination.point,
+    );
+    final selectedVehicle = ride.vehicle;
+    final previewKind = VehicleKind.fromCategory(selectedVehicle?.category);
+
     return AppPage(
       title: 'Choose your ride',
       subtitle: 'Estimated demo fares for a simulated trip',
@@ -130,10 +141,27 @@ class _VehicleBodyState extends ConsumerState<_VehicleBody> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           SchematicMap(
-            height: 160,
+            height: 176,
             origin: ride.pickup.point,
             destination: ride.destination.point,
-            route: [ride.pickup.point, ride.destination.point],
+            route: previewRoute,
+            marker: RouteGeometry.pointAt(previewRoute, 0.24),
+            vehicle: previewKind,
+          ),
+          const SizedBox(height: AppSpacing.xs),
+          Row(
+            children: [
+              Icon(previewKind.icon, size: 16, color: AppColors.primaryIndigo),
+              const SizedBox(width: 6),
+              Expanded(
+                child: Text(
+                  selectedVehicle == null
+                      ? 'Vehicle preview'
+                      : 'Preview · ${selectedVehicle.label}',
+                  style: AppTypography.caption,
+                ),
+              ),
+            ],
           ),
           const SizedBox(height: AppSpacing.md),
           AppCard(
@@ -228,12 +256,6 @@ class _VehicleCard extends StatelessWidget {
   final bool selected;
   final VoidCallback onTap;
 
-  static const Map<String, IconData> _icons = {
-    'GoRide': Icons.two_wheeler_rounded,
-    'GoCar': Icons.directions_car_rounded,
-    'GoCar Premium': Icons.local_taxi_rounded,
-  };
-
   @override
   Widget build(BuildContext context) {
     final quote = FareEngine.quote(vehicle: vehicle, distanceKm: distanceKm);
@@ -249,8 +271,11 @@ class _VehicleCard extends StatelessWidget {
       child: Row(
         children: [
           IconWell(
-            icon: _icons[vehicle.category] ?? Icons.directions_car_rounded,
-            background: selected ? AppColors.white : AppColors.indigoTint,
+            icon: AppIcons.vehicleFor(vehicle.category),
+            background: selected
+                ? AppColors.primaryIndigo
+                : AppColors.indigoTint,
+            foreground: selected ? AppColors.white : AppColors.primaryIndigo,
             size: 44,
           ),
           const SizedBox(width: AppSpacing.sm),
@@ -271,10 +296,6 @@ class _VehicleCard extends StatelessWidget {
                   '${vehicle.estimatedMinutes} min away',
                   style: AppTypography.caption,
                 ),
-                if (selected) ...[
-                  const SizedBox(height: AppSpacing.xxs),
-                  const StatusPill(label: 'Selected'),
-                ],
               ],
             ),
           ),
@@ -286,6 +307,14 @@ class _VehicleCard extends StatelessWidget {
               const Text('Demo estimate', style: AppTypography.caption),
             ],
           ),
+          if (selected) ...[
+            const SizedBox(width: AppSpacing.xs),
+            const Icon(
+              Icons.check_circle_rounded,
+              size: 20,
+              color: AppColors.primaryIndigo,
+            ),
+          ],
         ],
       ),
     );

@@ -1,7 +1,7 @@
 # UI/UX Guidelines
 
 ## Navigation
-Bottom navigation: Home, Activity, Rewards (or Profile depending on final IA), Profile. Keep active item indigo; inactive items neutral. Ride/food/send flows are nested routes with clear back behavior.
+Bottom navigation: Home, Activity, Rewards (or Profile depending on final IA), Profile. Keep the active item deep blue inside a soft blue pill; inactive items neutral. Ride/food/send flows are nested routes with clear back behavior.
 
 ## Screen composition
 Start with a clear page title or greeting, then primary task, supporting content, and optional discovery modules. Avoid generic admin-dashboard layouts.

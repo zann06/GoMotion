@@ -127,6 +127,7 @@ class _TrackingBody extends ConsumerWidget {
             destination: home,
             route: [origin, home],
             marker: MapPoint.lerp(origin, home, order.progress),
+            markerIcon: Icons.delivery_dining_rounded,
           ),
           const SizedBox(height: AppSpacing.md),
           AppCard(

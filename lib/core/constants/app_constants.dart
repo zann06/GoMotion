@@ -6,7 +6,7 @@
 abstract final class AppInfo {
   static const String name = 'GoMotion';
   static const String tagline = 'Move smarter. Feel every journey.';
-  static const String version = '0.1.0';
+  static const String version = '0.2.0';
 
   /// Shown in About GoMotion and settings.
   static const String offlineNotice =

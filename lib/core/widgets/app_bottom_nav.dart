@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/providers/reduced_motion_provider.dart';
 import '../constants/app_colors.dart';
+import '../constants/app_icons.dart';
 import '../constants/app_spacing.dart';
 import '../constants/app_typography.dart';
 import '../feedback/app_haptics.dart';
@@ -23,10 +24,10 @@ class NavDestination {
 
 /// The persistent bottom navigation for the primary areas.
 ///
-/// Active items use indigo; inactive items use neutral grey, per
-/// `docs/UI_UX_GUIDELINES.md`. Each item has a 48dp minimum target and an
-/// explicit semantics label with selected state, so status is never conveyed by
-/// colour alone.
+/// Active items sit inside a soft blue pill and use the deep-blue brand colour;
+/// inactive items use neutral grey, per `docs/UI_UX_GUIDELINES.md`. Each item
+/// has a 48dp minimum target and an explicit semantics label with selected
+/// state, so status is never conveyed by colour alone.
 class AppBottomNav extends StatelessWidget {
   const AppBottomNav({
     required this.currentIndex,
@@ -41,22 +42,22 @@ class AppBottomNav extends StatelessWidget {
     NavDestination(
       label: 'Home',
       icon: Icons.home_outlined,
-      activeIcon: Icons.home_rounded,
+      activeIcon: AppIcons.home,
     ),
     NavDestination(
       label: 'Activity',
       icon: Icons.receipt_long_outlined,
-      activeIcon: Icons.receipt_long_rounded,
+      activeIcon: AppIcons.activity,
     ),
     NavDestination(
       label: 'Rewards',
       icon: Icons.workspace_premium_outlined,
-      activeIcon: Icons.workspace_premium_rounded,
+      activeIcon: AppIcons.rewards,
     ),
     NavDestination(
       label: 'Profile',
       icon: Icons.person_outline_rounded,
-      activeIcon: Icons.person_rounded,
+      activeIcon: AppIcons.profile,
     ),
   ];
 
@@ -64,13 +65,13 @@ class AppBottomNav extends StatelessWidget {
   Widget build(BuildContext context) {
     return DecoratedBox(
       decoration: const BoxDecoration(
-        color: AppColors.softWhite,
+        color: AppColors.white,
         border: Border(top: BorderSide(color: AppColors.lightBorder)),
       ),
       child: SafeArea(
         top: false,
         child: ConstrainedBox(
-          constraints: const BoxConstraints(minHeight: 62),
+          constraints: const BoxConstraints(minHeight: 64),
           child: Row(
             children: [
               for (final (index, destination) in destinations.indexed)
@@ -139,12 +140,24 @@ class _NavItemState extends ConsumerState<_NavItem> {
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(
-                widget.selected
-                    ? widget.destination.activeIcon
-                    : widget.destination.icon,
-                size: 22,
-                color: color,
+              AnimatedContainer(
+                duration: motion.resolve(AppDuration.value),
+                curve: Curves.easeOut,
+                padding: const EdgeInsets.symmetric(horizontal: 14),
+                height: 30,
+                decoration: BoxDecoration(
+                  color: widget.selected
+                      ? AppColors.indigoTint
+                      : Colors.transparent,
+                  borderRadius: AppRadius.chip,
+                ),
+                child: Icon(
+                  widget.selected
+                      ? widget.destination.activeIcon
+                      : widget.destination.icon,
+                  size: 22,
+                  color: color,
+                ),
               ),
               const SizedBox(height: 3),
               Text(

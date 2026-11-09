@@ -130,6 +130,7 @@ class _TrackingBody extends ConsumerWidget {
             destination: home,
             route: [origin, home],
             marker: MapPoint.lerp(origin, home, progress),
+            markerIcon: Icons.two_wheeler_rounded,
           ),
           const SizedBox(height: AppSpacing.md),
           AppCard(

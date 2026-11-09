@@ -69,7 +69,7 @@ abstract final class AppTheme {
         contentTextStyle: AppTypography.bodyMuted,
       ),
       snackBarTheme: SnackBarThemeData(
-        backgroundColor: AppColors.deepNavy,
+        backgroundColor: AppColors.deepBlue,
         contentTextStyle: AppTypography.body.copyWith(color: AppColors.white),
         behavior: SnackBarBehavior.floating,
         elevation: 0,

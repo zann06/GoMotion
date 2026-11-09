@@ -12,7 +12,7 @@
       (covered by dedicated strictness tests).
 - [x] Design tokens, light theme, and brand palette established.
 - [x] Deterministic simulation clock and seeded driver assigner.
-- [x] `dart format .`, `flutter analyze`, and `flutter test` pass (136 tests).
+- [x] `dart format .`, `flutter analyze`, and `flutter test` pass (137 tests).
 - [x] CI workflow runs format, analyze, and test on push and pull request.
 - [x] Release manifest declares no `INTERNET` or location permission; only the
       debug overlay adds `INTERNET`, for the Flutter hot-reload tooling
@@ -20,12 +20,17 @@
 
 ## Product and design
 - [x] GoMotion name/tagline and original mark are used consistently.
-- [x] Indigo/blue/violet palette is primary; green is semantic success and map
+- [x] Deep-blue palette is primary (blue family with a restrained violet accent);
+      green is semantic success and map
       detail only.
 - [x] Screens follow the shared page scaffold, safe-area rules, and sticky
       primary actions.
 - [x] The persistent bottom navigation stays pinned to the bottom at its
       intended height, leaving every tab's page body visible.
+- [x] The schematic map previews the vehicle matching the selected ride option
+      (motorbike / car / premium), updating live when a different option is
+      tapped, and ride/food/send tracking show the matching vehicle or courier
+      icon.
 - [x] Demo/fictional labels are visible wherever money, people, or services are
       shown, including fares, wallet, drivers, restaurants, parcels, and receipts.
 
@@ -83,7 +88,7 @@
 - [x] README, changelog, contribution guide, and license complete.
 
 ## Release notes
-- Version `0.1.0+1`, an original fictional simulation. It is not a real
+- Version `0.2.0+2`, an original fictional simulation. It is not a real
   transportation, delivery, or payment service.
 - To sign a store build, copy `android/key.properties.example` to
   `android/key.properties`, create a keystore, and fill in the values. Until

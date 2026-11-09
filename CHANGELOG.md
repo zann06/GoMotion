@@ -2,6 +2,45 @@
 
 All notable changes to GoMotion will be documented here.
 
+## [0.2.0] - 2026-11-10
+
+Design refresh: a deeper, cleaner deep-blue identity, a schematic map that
+previews the selected vehicle, and more consistent iconography. No changes to
+the offline architecture, and no competitor assets. See `docs/DESIGN_REFRESH.md`.
+
+### Changed
+- Palette rebased on a deep-blue family. `primaryIndigo` moves from `#4F46E5` to
+  `#1D4ED8`, with new `deepBlue` (`#0E2A6E`) and `brightBlue` (`#3B82F6`) tokens;
+  `violet` is narrowed to a restrained tertiary accent. Token names are
+  preserved so the change is a value-level restyle. The primary gradient is now
+  `deepBlue → primaryIndigo → electricBlue`.
+- Bottom navigation active item now sits in a soft blue pill with a filled icon.
+- Home hero card carries an explicit `Demo` pill and a clear arrow search
+  affordance; service tiles gained gradient icon wells with coloured shadows.
+- The home avatar now opens the profile.
+
+### Added
+- `lib/core/constants/app_icons.dart`: one canonical icon set for services and
+  vehicles, plus `VehicleKind` and `VehicleKind.fromCategory`.
+- `SchematicMap` can render the selected vehicle: a white chip marker with a
+  soft halo shows the motorbike/car/premium icon, with optional nearby idle
+  vehicles. Ride tracking shows the chosen vehicle; GoFood/GoSend tracking show
+  courier icons.
+- The vehicle-selection map previews the chosen vehicle at 24% along the route
+  and updates live when a different option is tapped.
+- The schematic illustration gained city blocks, roads with casings, park
+  blocks, and a subtle ground wash.
+
+### Documentation
+- New `docs/DESIGN_REFRESH.md` records the proposal and decisions. Updated
+  `docs/DESIGN_SYSTEM.md` (palette, gradient, iconography), `docs/UI_UX_GUIDELINES.md`,
+  `README.md`, and `docs/ACCEPTANCE_CHECKLIST.md`.
+
+### Verification
+- `dart format .` clean, `flutter analyze` clean, `flutter test` passes 137
+  tests (was 136), adding a regression test that the map preview follows the
+  selected vehicle. Release web build and device screenshots captured.
+
 ## [0.1.1] - 2026-11-10
 
 Polish pass fixing remaining bugs and gaps found while auditing the demo, with

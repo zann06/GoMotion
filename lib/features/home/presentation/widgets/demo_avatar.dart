@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../app/providers/app_providers.dart';
 import '../../../../app/providers/reduced_motion_provider.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/constants/app_typography.dart';
+import '../../../../core/navigation/app_routes.dart';
 import '../../../../domain/entities/fixtures.dart';
 
 /// Resolves the demo profile, used for greetings and wallet display.
@@ -109,13 +111,20 @@ class HomeGreeting extends ConsumerWidget {
           duration: motion.resolve(AppDuration.enter),
           child: user == null
               ? const SizedBox.shrink()
-              : DemoAvatar(
-                  key: const ValueKey('home-avatar'),
-                  size: 46,
-                  asset: user.avatarAsset.isEmpty
-                      ? null
-                      : 'assets/images/${user.avatarAsset}',
-                  name: user.displayName,
+              : Semantics(
+                  button: true,
+                  label: 'Open profile',
+                  child: GestureDetector(
+                    onTap: () => context.goNamed(AppRoutes.profileName),
+                    child: DemoAvatar(
+                      key: const ValueKey('home-avatar'),
+                      size: 46,
+                      asset: user.avatarAsset.isEmpty
+                          ? null
+                          : 'assets/images/${user.avatarAsset}',
+                      name: user.displayName,
+                    ),
+                  ),
                 ),
         ),
       ],

@@ -5,7 +5,9 @@ import 'package:gomotion/app/app.dart';
 import 'package:gomotion/app/providers/app_providers.dart';
 import 'package:gomotion/app/providers/reduced_motion_provider.dart';
 import 'package:gomotion/core/constants/app_constants.dart';
+import 'package:gomotion/core/constants/app_icons.dart';
 import 'package:gomotion/core/navigation/app_routes.dart';
+import 'package:gomotion/core/widgets/schematic_map.dart';
 import 'package:gomotion/data/preferences/preferences_store.dart';
 import 'package:gomotion/simulation/fake_simulation_clock.dart';
 
@@ -106,6 +108,32 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Demo receipt'), findsOneWidget);
+  });
+
+  testWidgets('the map preview follows the selected vehicle', (tester) async {
+    await pumpApp(tester, AppRoutes.destinationSearch);
+    await chooseFirstDestination(tester);
+
+    SchematicMap map() =>
+        tester.widget<SchematicMap>(find.byType(SchematicMap).first);
+
+    // Defaults to the cheapest option: GoRide is a motorbike.
+    expect(map().vehicle, VehicleKind.motorbike);
+    expect(map().marker, isNotNull);
+
+    await tester.ensureVisible(find.text('GoCar'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('GoCar'));
+    await tester.pumpAndSettle();
+    expect(map().vehicle, VehicleKind.car);
+    expect(find.textContaining('Preview · GoCar'), findsOneWidget);
+
+    await tester.ensureVisible(find.text('GoCar Premium'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('GoCar Premium'));
+    await tester.pumpAndSettle();
+    expect(map().vehicle, VehicleKind.premium);
+    expect(find.textContaining('Preview · GoCar Premium'), findsOneWidget);
   });
 
   testWidgets('a promo code can be applied and removed from the review', (

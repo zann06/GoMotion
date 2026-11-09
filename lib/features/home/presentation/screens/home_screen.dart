@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../app/providers/reduced_motion_provider.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/app_icons.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/constants/app_typography.dart';
 import '../../../../core/navigation/app_routes.dart';
@@ -12,6 +13,7 @@ import '../../../../core/widgets/app_card.dart';
 import '../../../../core/widgets/app_page.dart';
 import '../../../../core/widgets/fixture_gate.dart';
 import '../../../../core/widgets/schematic_map.dart';
+import '../../../../domain/entities/fixtures.dart';
 import '../../application/active_journey_provider.dart';
 import '../widgets/demo_avatar.dart';
 
@@ -116,9 +118,9 @@ class _ActiveJourneyBanner extends ConsumerWidget {
   }
 
   static IconData _iconFor(ActiveJourneyKind kind) => switch (kind) {
-    ActiveJourneyKind.ride => Icons.directions_car_filled_rounded,
-    ActiveJourneyKind.food => Icons.restaurant_rounded,
-    ActiveJourneyKind.send => Icons.inventory_2_rounded,
+    ActiveJourneyKind.ride => AppIcons.ride,
+    ActiveJourneyKind.food => AppIcons.food,
+    ActiveJourneyKind.send => AppIcons.send,
   };
 }
 
@@ -146,11 +148,27 @@ class _JourneyCard extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Your next journey', style: AppTypography.onGradientTitle),
-          const SizedBox(height: AppSpacing.xxs),
-          const Text(
-            'Where would you like to go?',
-            style: AppTypography.onGradientBody,
+          const Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Your next journey',
+                      style: AppTypography.onGradientTitle,
+                    ),
+                    SizedBox(height: AppSpacing.xxs),
+                    Text(
+                      'Where would you like to go?',
+                      style: AppTypography.onGradientBody,
+                    ),
+                  ],
+                ),
+              ),
+              StatusPill(label: 'Demo', tone: PillTone.onGradient),
+            ],
           ),
           const SizedBox(height: AppSpacing.md),
           Semantics(
@@ -167,18 +185,31 @@ class _JourneyCard extends ConsumerWidget {
                   padding: const EdgeInsets.symmetric(
                     horizontal: AppSpacing.md,
                   ),
-                  child: const Row(
+                  child: Row(
                     children: [
-                      Icon(
+                      const Icon(
                         Icons.search_rounded,
                         size: 20,
                         color: AppColors.neutralGray,
                       ),
-                      SizedBox(width: AppSpacing.sm),
-                      Expanded(
+                      const SizedBox(width: AppSpacing.sm),
+                      const Expanded(
                         child: Text(
                           'Search destination',
                           style: AppTypography.bodyMuted,
+                        ),
+                      ),
+                      Container(
+                        width: 32,
+                        height: 32,
+                        decoration: const BoxDecoration(
+                          color: AppColors.primaryIndigo,
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          Icons.arrow_forward_rounded,
+                          size: 17,
+                          color: AppColors.white,
                         ),
                       ),
                     ],
@@ -212,13 +243,30 @@ class _HomeMap extends ConsumerWidget {
       loading: const _MapPlaceholder(),
       builder: (context, bundle) {
         final popular = bundle.popularLocations.take(3).toList();
+        final origin = bundle.defaultPickup.point;
+        final destination = popular.isEmpty ? null : popular.first.point;
+        final route = destination == null
+            ? const <MapPoint>[]
+            : [origin, destination];
         return SchematicMap(
-          height: 190,
-          origin: bundle.defaultPickup.point,
-          destination: popular.isEmpty ? null : popular.first.point,
-          route: popular.isEmpty
-              ? const []
-              : [bundle.defaultPickup.point, popular.first.point],
+          height: 200,
+          origin: origin,
+          destination: destination,
+          route: route,
+          marker: destination == null
+              ? null
+              : MapPoint.lerp(origin, destination, 0.2),
+          vehicle: VehicleKind.car,
+          nearby: const [
+            MapVehiclePin(
+              point: MapPoint(x: 0.33, y: 0.66),
+              kind: VehicleKind.motorbike,
+            ),
+            MapVehiclePin(
+              point: MapPoint(x: 0.72, y: 0.44),
+              kind: VehicleKind.car,
+            ),
+          ],
         );
       },
     );
@@ -258,7 +306,7 @@ class _ServiceShortcuts extends ConsumerWidget {
     final services = <_Service>[
       _Service(
         label: 'Ride',
-        icon: Icons.directions_car_filled_rounded,
+        icon: AppIcons.ride,
         color: AppColors.primaryIndigo,
         onTap: () => context.push(
           locationFor(ActiveJourneyKind.ride, AppRoutes.destinationSearch),
@@ -266,22 +314,22 @@ class _ServiceShortcuts extends ConsumerWidget {
       ),
       _Service(
         label: 'Food',
-        icon: Icons.restaurant_rounded,
+        icon: AppIcons.food,
         color: AppColors.electricBlue,
         onTap: () =>
             context.push(locationFor(ActiveJourneyKind.food, AppRoutes.food)),
       ),
       _Service(
         label: 'Send',
-        icon: Icons.inventory_2_rounded,
+        icon: AppIcons.send,
         color: AppColors.violet,
         onTap: () =>
             context.push(locationFor(ActiveJourneyKind.send, AppRoutes.send)),
       ),
       _Service(
         label: 'Rewards',
-        icon: Icons.workspace_premium_rounded,
-        color: AppColors.deepNavy,
+        icon: AppIcons.rewards,
+        color: AppColors.deepBlue,
         onTap: () => context.goNamed(AppRoutes.rewardsName),
       ),
     ];
@@ -342,20 +390,34 @@ class _ServiceTile extends StatelessWidget {
       child: Column(
         children: [
           Container(
-            width: 44,
-            height: 44,
+            width: 46,
+            height: 46,
             decoration: BoxDecoration(
-              color: service.color,
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  service.color,
+                  Color.lerp(service.color, AppColors.white, 0.22)!,
+                ],
+              ),
               borderRadius: AppRadius.tile,
+              boxShadow: [
+                BoxShadow(
+                  color: service.color.withValues(alpha: 0.28),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
+                ),
+              ],
             ),
-            child: Icon(service.icon, color: AppColors.white, size: 22),
+            child: Icon(service.icon, color: AppColors.white, size: 23),
           ),
           const SizedBox(height: AppSpacing.xs),
           Text(
             service.label,
             style: AppTypography.caption.copyWith(
               color: AppColors.deepNavy,
-              fontWeight: FontWeight.w600,
+              fontWeight: FontWeight.w700,
             ),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
@@ -394,6 +456,20 @@ class _PopularNearby extends ConsumerWidget {
           ),
           child: Row(
             children: [
+              Container(
+                width: 40,
+                height: 40,
+                decoration: const BoxDecoration(
+                  color: AppColors.indigoTint,
+                  borderRadius: AppRadius.tile,
+                ),
+                child: const Icon(
+                  AppIcons.destination,
+                  size: 20,
+                  color: AppColors.primaryIndigo,
+                ),
+              ),
+              const SizedBox(width: AppSpacing.sm),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,

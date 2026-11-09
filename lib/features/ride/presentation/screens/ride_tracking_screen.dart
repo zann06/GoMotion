@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../app/providers/reduced_motion_provider.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_constants.dart';
+import '../../../../core/constants/app_icons.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/constants/app_typography.dart';
 import '../../../../core/navigation/app_routes.dart';
@@ -93,6 +94,7 @@ class _TrackingBody extends ConsumerWidget {
               destination: ride.destination.point,
               route: route,
               marker: marker,
+              vehicle: VehicleKind.fromCategory(ride.vehicle?.category),
             ),
           ),
           const SizedBox(height: AppSpacing.md),
