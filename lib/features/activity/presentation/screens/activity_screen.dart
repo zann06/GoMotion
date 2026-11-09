@@ -6,6 +6,7 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_constants.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/constants/app_typography.dart';
+import '../../../../core/constants/mascot_assets.dart';
 import '../../../../core/navigation/app_routes.dart';
 import '../../../../core/widgets/app_card.dart';
 import '../../../../core/widgets/app_inputs.dart';
@@ -46,6 +47,7 @@ class _ActivityScreenState extends ConsumerState<ActivityScreen> {
                   'here once you finish a simulated journey.',
               actionLabel: 'Start a demo ride',
               onAction: () => context.goNamed(AppRoutes.destinationSearchName),
+              mascot: MascotVariant.wave,
             )
           : Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -80,6 +82,7 @@ class _ActivityScreenState extends ConsumerState<ActivityScreen> {
                         'have been completed yet.',
                     actionLabel: 'Show all activity',
                     onAction: () => setState(() => _filter = null),
+                    mascot: MascotVariant.wave,
                   )
                 else
                   for (final record in records) ...[

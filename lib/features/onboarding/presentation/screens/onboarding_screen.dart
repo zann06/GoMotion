@@ -7,10 +7,12 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_constants.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/constants/app_typography.dart';
+import '../../../../core/constants/mascot_assets.dart';
 import '../../../../core/navigation/app_routes.dart';
 import '../../../../core/widgets/app_card.dart';
 import '../../../../core/widgets/app_page.dart';
 import '../../../../core/widgets/app_states.dart';
+import '../../../../core/widgets/mascot.dart';
 import '../../../../core/widgets/primary_button.dart';
 
 /// First-launch welcome.
@@ -64,26 +66,13 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
         children: [
           const SizedBox(height: AppSpacing.xl),
           Container(
-            height: 180,
+            height: 190,
             decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  AppColors.primaryIndigo,
-                  AppColors.electricBlue,
-                  AppColors.violet,
-                ],
-              ),
+              gradient: AppColors.primaryGradient,
               borderRadius: AppRadius.hero,
             ),
             child: const Center(
-              child: Icon(
-                Icons.near_me_rounded,
-                size: 64,
-                color: AppColors.white,
-                semanticLabel: 'GoMotion demo mark',
-              ),
+              child: Mascot(variant: MascotVariant.wave, size: MascotSize.hero),
             ),
           ),
           const SizedBox(height: AppSpacing.xl),

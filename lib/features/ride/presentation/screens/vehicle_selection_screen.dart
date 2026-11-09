@@ -7,12 +7,14 @@ import '../../../../core/constants/app_constants.dart';
 import '../../../../core/constants/app_icons.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/constants/app_typography.dart';
+import '../../../../core/constants/mascot_assets.dart';
 import '../../../../core/navigation/app_routes.dart';
 import '../../../../core/widgets/app_card.dart';
 import '../../../../core/widgets/app_inputs.dart';
 import '../../../../core/widgets/app_page.dart';
 import '../../../../core/widgets/app_states.dart';
 import '../../../../core/widgets/fixture_gate.dart';
+import '../../../../core/widgets/mascot.dart';
 import '../../../../core/widgets/primary_button.dart';
 import '../../../../core/widgets/schematic_map.dart';
 import '../../../../domain/entities/fixtures.dart';
@@ -151,8 +153,12 @@ class _VehicleBodyState extends ConsumerState<_VehicleBody> {
           const SizedBox(height: AppSpacing.xs),
           Row(
             children: [
-              Icon(previewKind.icon, size: 16, color: AppColors.primaryIndigo),
-              const SizedBox(width: 6),
+              Mascot(
+                variant: previewKind.mascotVariant,
+                size: MascotSize.small,
+                animation: MascotAnimation.none,
+              ),
+              const SizedBox(width: AppSpacing.sm),
               Expanded(
                 child: Text(
                   selectedVehicle == null

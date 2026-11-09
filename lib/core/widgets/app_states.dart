@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import '../constants/app_colors.dart';
 import '../constants/app_spacing.dart';
 import '../constants/app_typography.dart';
+import '../constants/mascot_assets.dart';
+import 'mascot.dart';
 import 'primary_button.dart';
 
 /// A screen-level loading state with a shimmering skeleton.
@@ -109,6 +111,7 @@ class AppEmptyState extends StatelessWidget {
     required this.message,
     this.actionLabel,
     this.onAction,
+    this.mascot,
     super.key,
   });
 
@@ -118,6 +121,9 @@ class AppEmptyState extends StatelessWidget {
   final String? actionLabel;
   final VoidCallback? onAction;
 
+  /// When set, the mascot illustrates the state instead of a plain icon.
+  final MascotVariant? mascot;
+
   @override
   Widget build(BuildContext context) {
     return Center(
@@ -126,14 +132,11 @@ class AppEmptyState extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Container(
-              width: 64,
-              height: 64,
-              decoration: const BoxDecoration(
-                color: AppColors.indigoTint,
-                shape: BoxShape.circle,
-              ),
-              child: Icon(icon, size: 28, color: AppColors.primaryIndigo),
+            _StateArt(
+              icon: icon,
+              background: AppColors.indigoTint,
+              foreground: AppColors.primaryIndigo,
+              mascot: mascot,
             ),
             const SizedBox(height: AppSpacing.md),
             Text(
@@ -244,6 +247,7 @@ class AppErrorState extends StatelessWidget {
     required this.message,
     this.onRetry,
     this.retryLabel = 'Try again',
+    this.mascot,
     super.key,
   });
 
@@ -251,6 +255,9 @@ class AppErrorState extends StatelessWidget {
   final String message;
   final VoidCallback? onRetry;
   final String retryLabel;
+
+  /// When set, the mascot illustrates the failure instead of a plain icon.
+  final MascotVariant? mascot;
 
   @override
   Widget build(BuildContext context) {
@@ -260,18 +267,11 @@ class AppErrorState extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Container(
-              width: 64,
-              height: 64,
-              decoration: const BoxDecoration(
-                color: AppColors.errorTint,
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(
-                Icons.error_outline_rounded,
-                size: 28,
-                color: AppColors.error,
-              ),
+            _StateArt(
+              icon: Icons.error_outline_rounded,
+              background: AppColors.errorTint,
+              foreground: AppColors.error,
+              mascot: mascot,
             ),
             const SizedBox(height: AppSpacing.md),
             Text(
@@ -295,6 +295,37 @@ class AppErrorState extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+/// Illustrates a state with the mascot when one is provided, or a tinted icon
+/// otherwise. Keeping both paths here means every empty/error screen shares one
+/// visual treatment.
+class _StateArt extends StatelessWidget {
+  const _StateArt({
+    required this.icon,
+    required this.background,
+    required this.foreground,
+    required this.mascot,
+  });
+
+  final IconData icon;
+  final Color background;
+  final Color foreground;
+  final MascotVariant? mascot;
+
+  @override
+  Widget build(BuildContext context) {
+    final variant = mascot;
+    if (variant != null) {
+      return Mascot(variant: variant, size: MascotSize.large);
+    }
+    return Container(
+      width: 64,
+      height: 64,
+      decoration: BoxDecoration(color: background, shape: BoxShape.circle),
+      child: Icon(icon, size: 28, color: foreground),
     );
   }
 }

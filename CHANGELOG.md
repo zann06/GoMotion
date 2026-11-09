@@ -2,6 +2,45 @@
 
 All notable changes to GoMotion will be documented here.
 
+## [0.3.0] - 2026-11-10
+
+Brand character release: the GoMotion mascot now runs through the app as one
+consistent character, with its own pose per service, a mascot splash, and a
+mascot-driven vehicle marker on the live map. Still fully offline and
+deterministic. See `docs/MASCOT.md` and `assets/mascot/README.md`.
+
+### Added
+- `lib/core/constants/mascot_assets.dart`: mascot poses, motion intents, sizes,
+  asset slots, and the `MascotAssets.bundled` drop-in switch.
+- `lib/core/widgets/mascot_art.dart`: an original code-drawn character (rider in
+  an electric-blue helmet carrying a white G, deep-blue jacket, black gloves)
+  with a distinct pose per context: thumbs-up hero, wave, loading, motorbike,
+  car, food bag, parcel, success, and puzzled.
+- `lib/core/widgets/mascot.dart`: the reusable `Mascot` widget plus the
+  `MascotBanner` service strip and `MascotLoadingDots`.
+- `lib/core/widgets/mascot_map_marker.dart`: the animated mascot vehicle marker,
+  with a rotating heading tick and a moving trail.
+- `lib/features/splash/presentation/screens/splash_screen.dart`: a cold-start
+  mascot splash with an entrance animation, brand mark, tagline, and progress
+  indicator that hands off on completion rather than on a timer.
+- `RouteGeometry.bearingAt`, so a map marker can face its travel direction.
+- `assets/mascot/` with a drop-in guide, and `docs/MASCOT.md`.
+
+### Changed
+- `SchematicMap` is now a `ConsumerWidget` and draws the mascot as the vehicle
+  marker (`markerMascot`, `bearing`, `isMoving`), easing to each new position
+  instead of stepping. Ride, GoFood, and GoSend tracking use it.
+- Ride tracking, vehicle selection, home hero, and onboarding now use mascot
+  poses instead of generic icons; GoFood and GoSend gained a service banner.
+- `AppEmptyState`/`AppErrorState`/`EmptyStateBody` accept an optional mascot, and
+  the fixture-failure state uses the puzzled pose.
+
+### Verification
+- `dart format .` clean, `flutter analyze` clean, `flutter test` passes 164
+  tests (was 137), adding mascot component, marker footprint, and route-bearing
+  coverage. Splash added to the 1.0x/1.3x text-scale route sweep.
+- Release web build verified.
+
 ## [0.2.0] - 2026-11-10
 
 Design refresh: a deeper, cleaner deep-blue identity, a schematic map that

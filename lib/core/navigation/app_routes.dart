@@ -20,6 +20,10 @@ abstract final class AppRoutes {
   static const String onboarding = '/welcome';
   static const String onboardingName = 'onboarding';
 
+  // Splash.
+  static const String splash = '/splash';
+  static const String splashName = 'splash';
+
   // Destination selection.
   static const String destinationSearch = '/destination/search';
   static const String destinationSearchName = 'destinationSearch';

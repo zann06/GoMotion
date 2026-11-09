@@ -1,12 +1,16 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../app/providers/reduced_motion_provider.dart';
 import '../../domain/entities/fixtures.dart';
 import '../constants/app_colors.dart';
 import '../constants/app_icons.dart';
 import '../constants/app_spacing.dart';
 import '../constants/app_typography.dart';
+import '../constants/mascot_assets.dart';
+import 'mascot_map_marker.dart';
 
 /// A nearby vehicle drawn on the schematic map, e.g. an idle demo car.
 @immutable
@@ -25,7 +29,7 @@ class MapVehiclePin {
 /// marker whose icon matches the selected ride vehicle.
 ///
 /// Every coordinate is a normalised [MapPoint].
-class SchematicMap extends StatelessWidget {
+class SchematicMap extends ConsumerWidget {
   const SchematicMap({
     this.route = const [],
     this.origin,
@@ -33,6 +37,9 @@ class SchematicMap extends StatelessWidget {
     this.marker,
     this.vehicle,
     this.markerIcon,
+    this.markerMascot,
+    this.bearing = 0,
+    this.isMoving = false,
     this.nearby = const [],
     this.showDemoLabel = true,
     this.height = 220,
@@ -49,14 +56,24 @@ class SchematicMap extends StatelessWidget {
   /// Destination pin.
   final MapPoint? destination;
 
-  /// Animated marker position, e.g. the approaching driver or courier.
+  /// Animated marker position, e.g. the approaching driver or courier. The
+  /// marker eases to each new position instead of jumping.
   final MapPoint? marker;
 
   /// Vehicle shape shown inside the marker. Defaults to a car.
   final VehicleKind? vehicle;
 
-  /// Overrides the marker icon, e.g. a delivery rider for GoFood/GoSend.
+  /// Overrides the marker with a plain icon, e.g. a legacy courier glyph.
   final IconData? markerIcon;
+
+  /// Overrides the mascot pose used for the vehicle marker.
+  final MascotVariant? markerMascot;
+
+  /// Travel bearing in radians, where `0` points up (north).
+  final double bearing;
+
+  /// Whether the marker is currently travelling.
+  final bool isMoving;
 
   /// Idle nearby vehicles, drawn as small secondary markers.
   final List<MapVehiclePin> nearby;
@@ -73,8 +90,22 @@ class SchematicMap extends StatelessWidget {
   String get _markerLabel =>
       markerIcon != null ? 'demo courier' : (vehicle ?? VehicleKind.car).label;
 
+  /// The mascot pose for the marker, or null when a plain icon is used.
+  ///
+  /// The mascot vehicle is the primary treatment; [markerIcon] is the escape
+  /// hatch for callers that still want a bare glyph.
+  MascotVariant? get _resolvedMascot {
+    if (markerIcon != null) return null;
+    final explicit = markerMascot;
+    if (explicit != null) return explicit;
+    return vehicle?.mascotVariant;
+  }
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final motion = ref.watch(reduceMotionProvider);
+    final mascot = _resolvedMascot;
+
     return Semantics(
       label:
           'Illustrated demo map. Not a real map and not live GPS. '
@@ -90,6 +121,19 @@ class SchematicMap extends StatelessWidget {
           child: LayoutBuilder(
             builder: (context, constraints) {
               final size = Size(constraints.maxWidth, height);
+              final markerExtent = mascot == null
+                  ? 58.0
+                  : MascotMapMarker.boxSize(54);
+              final markerWidget = mascot == null
+                  ? _VehicleMarker(
+                      icon: _resolvedMarkerIcon,
+                      label: _markerLabel,
+                    )
+                  : MascotMapMarker(
+                      variant: mascot,
+                      bearing: bearing,
+                      isMoving: isMoving,
+                    );
               return Stack(
                 clipBehavior: Clip.hardEdge,
                 children: [
@@ -107,14 +151,14 @@ class SchematicMap extends StatelessWidget {
                   for (final pin in nearby)
                     _at(size, pin.point, 32, _NearbyVehicle(kind: pin.kind)),
                   if (marker != null)
-                    _at(
-                      size,
-                      marker!,
-                      58,
-                      _VehicleMarker(
-                        icon: _resolvedMarkerIcon,
-                        label: _markerLabel,
-                      ),
+                    AnimatedPositioned(
+                      duration: motion.resolve(AppDuration.value),
+                      curve: Curves.linear,
+                      left: _left(size, marker!, markerExtent),
+                      top: _top(size, marker!, markerExtent),
+                      width: markerExtent,
+                      height: markerExtent,
+                      child: markerWidget,
                     ),
                   if (showDemoLabel)
                     const Positioned(
@@ -131,17 +175,23 @@ class SchematicMap extends StatelessWidget {
     );
   }
 
+  /// Centres a normalised point inside the map, clamped so a marker of
+  /// [extent] never spills past the edge.
+  double _left(Size size, MapPoint point, double extent) =>
+      (point.x * size.width - extent / 2)
+          .clamp(0.0, math.max(0, size.width - extent))
+          .toDouble();
+
+  double _top(Size size, MapPoint point, double extent) =>
+      (point.y * size.height - extent / 2)
+          .clamp(0.0, math.max(0, size.height - extent))
+          .toDouble();
+
   /// Places [child] centred on a normalised point, clamped inside the map.
   Widget _at(Size size, MapPoint point, double extent, Widget child) {
-    final left = (point.x * size.width - extent / 2)
-        .clamp(0.0, math.max(0, size.width - extent))
-        .toDouble();
-    final top = (point.y * size.height - extent / 2)
-        .clamp(0.0, math.max(0, size.height - extent))
-        .toDouble();
     return Positioned(
-      left: left,
-      top: top,
+      left: _left(size, point, extent),
+      top: _top(size, point, extent),
       width: extent,
       height: extent,
       child: child,

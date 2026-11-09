@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../constants/app_spacing.dart';
+import '../constants/mascot_assets.dart';
 import 'app_states.dart';
 
 /// A screen-body wrapper for [AppEmptyState].
@@ -14,6 +15,7 @@ class EmptyStateBody extends StatelessWidget {
     required this.message,
     this.actionLabel,
     this.onAction,
+    this.mascot,
     super.key,
   });
 
@@ -22,6 +24,9 @@ class EmptyStateBody extends StatelessWidget {
   final String message;
   final String? actionLabel;
   final VoidCallback? onAction;
+
+  /// Optional mascot illustration for the empty state.
+  final MascotVariant? mascot;
 
   @override
   Widget build(BuildContext context) {
@@ -33,6 +38,7 @@ class EmptyStateBody extends StatelessWidget {
         message: message,
         actionLabel: actionLabel,
         onAction: onAction,
+        mascot: mascot,
       ),
     );
   }

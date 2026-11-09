@@ -43,10 +43,35 @@ abstract final class RouteGeometry {
   static MapPoint? pointAt(List<MapPoint> route, double t) {
     if (route.isEmpty) return null;
     if (route.length == 1) return route.first;
+    final (a, b) = _segmentAt(route, t);
+    return MapPoint.lerp(a, b, _localT(route, t));
+  }
+
+  /// The travel bearing at [t], in radians, where `0` points up (north).
+  ///
+  /// Derived from the local segment direction so a marker can rotate to face
+  /// the way it is travelling. Returns `0` for a degenerate route.
+  static double bearingAt(List<MapPoint> route, double t) {
+    if (route.length < 2) return 0;
+    final (a, b) = _segmentAt(route, t);
+    final dx = b.x - a.x;
+    final dy = b.y - a.y;
+    if (dx == 0 && dy == 0) return 0;
+    // Screen y grows downward, so north is -dy.
+    return math.atan2(dx, -dy);
+  }
+
+  static (MapPoint, MapPoint) _segmentAt(List<MapPoint> route, double t) {
     final clamped = t.clamp(0.0, 1.0);
     final scaled = clamped * (route.length - 1);
     final index = scaled.floor().clamp(0, route.length - 2);
-    final localT = scaled - index;
-    return MapPoint.lerp(route[index], route[index + 1], localT);
+    return (route[index], route[index + 1]);
+  }
+
+  static double _localT(List<MapPoint> route, double t) {
+    final clamped = t.clamp(0.0, 1.0);
+    final scaled = clamped * (route.length - 1);
+    final index = scaled.floor().clamp(0, route.length - 2);
+    return scaled - index;
   }
 }

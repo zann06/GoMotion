@@ -6,6 +6,7 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_constants.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/constants/app_typography.dart';
+import '../../../../core/constants/mascot_assets.dart';
 import '../../../../core/navigation/app_routes.dart';
 import '../../../../core/widgets/app_card.dart';
 import '../../../../core/widgets/app_inputs.dart';
@@ -36,6 +37,7 @@ class FoodCartScreen extends ConsumerWidget {
               message:
                   'Add a dish from one of the bundled demo restaurants to '
                   'continue.',
+              mascot: MascotVariant.food,
             ),
             const SizedBox(height: AppSpacing.md),
             TonalButton(

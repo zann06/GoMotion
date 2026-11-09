@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/providers/app_providers.dart';
+import '../../core/constants/mascot_assets.dart';
 import '../../core/errors/app_failure.dart';
 import '../../core/widgets/app_states.dart';
 import '../../domain/repositories/fixture_repository.dart';
@@ -37,6 +38,7 @@ class FixtureGate extends ConsumerWidget {
               'Bundled demo data could not be loaded. Reinstall the app to '
                   'restore the offline dataset.',
           onRetry: () => ref.invalidate(fixtureBundleProvider),
+          mascot: MascotVariant.error,
         );
       },
       data: (bundle) => builder(context, bundle),

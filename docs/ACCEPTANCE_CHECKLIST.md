@@ -12,7 +12,7 @@
       (covered by dedicated strictness tests).
 - [x] Design tokens, light theme, and brand palette established.
 - [x] Deterministic simulation clock and seeded driver assigner.
-- [x] `dart format .`, `flutter analyze`, and `flutter test` pass (137 tests).
+- [x] `dart format .`, `flutter analyze`, and `flutter test` pass (164 tests).
 - [x] CI workflow runs format, analyze, and test on push and pull request.
 - [x] Release manifest declares no `INTERNET` or location permission; only the
       debug overlay adds `INTERNET`, for the Flutter hot-reload tooling
@@ -31,6 +31,20 @@
       (motorbike / car / premium), updating live when a different option is
       tapped, and ride/food/send tracking show the matching vehicle or courier
       icon.
+- [x] The GoMotion mascot is one consistent, original character drawn in code
+      (no bundled art, no competitor assets): a rider with an electric-blue
+      helmet carrying a white G, a deep-blue jacket, and black gloves.
+- [x] The mascot appears with a distinct pose per context — splash/welcome (wave),
+      home (thumbs-up hero), GoRide (motorbike), GoCar (driving), GoFood (food
+      bag), GoSend (parcel), receipts (success), and empty/error states
+      (friendly or puzzled) — rather than one repeated image.
+- [x] The mascot drives the live-map vehicle marker for GoRide and GoCar: it
+      follows the simulated coordinates, eases to each new position instead of
+      jumping, shows a rotating heading tick for the travel bearing, shows a
+      moving trail while travelling, and does not disturb zoom, pan, the route
+      polyline, or map interaction.
+- [x] Mascot motion is short and finite (one-shot on mount, then still), so no
+      perpetual ticker runs; it holds its settled frame under reduced motion.
 - [x] Demo/fictional labels are visible wherever money, people, or services are
       shown, including fares, wallet, drivers, restaurants, parcels, and receipts.
 
@@ -50,6 +64,12 @@
 - [x] Activity list with kind filters and per-record detail.
 - [x] Profile, demo wallet, points, saved places, rewards, settings, and reset.
 - [x] First-launch onboarding, shown once and persisted locally.
+- [x] Cold start shows a mascot splash with an entrance animation, brand mark,
+      tagline, and a progress indicator, then hands off to the welcome screen on a
+      first launch or the dashboard afterwards (no dangling timers).
+- [x] The offline notice on the splash and the demo labelling on the map make it
+      explicit that the vehicle position is simulated, not live GPS or a real
+      driver.
 - [x] Every visible button has a working local action. Journey widget tests tap
       the real controls, and a grep finds no empty handlers.
 - [x] An in-progress ride, order, or parcel can be resumed from the dashboard;
@@ -75,8 +95,12 @@
 - [x] Semantic labels on icon-only controls, live regions on async status, and
       48dp minimum touch targets.
 - [x] Status is never conveyed by colour alone; every pill carries a text label.
-- [x] No layout overflow at 1.0x and 1.3x text scale across all primary routes
-      (`test/app/accessibility_test.dart`).
+- [x] No layout overflow at 1.0x and 1.3x text scale across all primary routes,
+      including the splash (`test/app/accessibility_test.dart`).
+- [x] Mascot poses, the service banner, and the map marker each settle into a
+      stable frame and expose an accessible label
+      (`test/core/widgets/mascot_test.dart`), and marker bearing/position maths is
+      covered by `test/domain/route_geometry_test.dart`.
 - [x] `dart format .`, `flutter analyze`, and `flutter test` pass.
 - [x] Android debug and release builds succeed locally, with an adaptive
       launcher icon (foreground/background/monochrome) and a round-icon
@@ -88,7 +112,7 @@
 - [x] README, changelog, contribution guide, and license complete.
 
 ## Release notes
-- Version `0.2.0+2`, an original fictional simulation. It is not a real
+- Version `0.3.0+3`, an original fictional simulation. It is not a real
   transportation, delivery, or payment service.
 - To sign a store build, copy `android/key.properties.example` to
   `android/key.properties`, create a keystore, and fill in the values. Until

@@ -2,16 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../../app/providers/reduced_motion_provider.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_constants.dart';
 import '../../../../core/constants/app_icons.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/constants/app_typography.dart';
+import '../../../../core/constants/mascot_assets.dart';
 import '../../../../core/navigation/app_routes.dart';
 import '../../../../core/widgets/app_card.dart';
 import '../../../../core/widgets/app_page.dart';
 import '../../../../core/widgets/app_states.dart';
+import '../../../../core/widgets/mascot.dart';
 import '../../../../core/widgets/primary_button.dart';
 import '../../../../core/widgets/schematic_map.dart';
 import '../../../../domain/entities/ride.dart';
@@ -67,13 +68,15 @@ class _TrackingBody extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final motion = ref.watch(reduceMotionProvider);
     final route = RouteGeometry.between(
       ride.pickup.point,
       ride.destination.point,
     );
     final marker = RouteGeometry.pointAt(route, ride.progress);
+    final bearing = RouteGeometry.bearingAt(route, ride.progress);
     final remaining = (1 - ride.progress).clamp(0.0, 1.0);
+    final mascot = MascotVariant.forRideCategory(ride.vehicle?.category);
+    final travelling = ride.stage == RideStage.inProgress;
 
     return AppPage(
       title: 'On your way',
@@ -82,20 +85,16 @@ class _TrackingBody extends ConsumerWidget {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          AnimatedSwitcher(
-            duration: motion.resolve(AppDuration.value),
-            child: SchematicMap(
-              key: ValueKey(
-                '${ride.pickup.id}-${ride.destination.id}-'
-                '${(ride.progress * 100).round()}',
-              ),
-              height: 260,
-              origin: ride.pickup.point,
-              destination: ride.destination.point,
-              route: route,
-              marker: marker,
-              vehicle: VehicleKind.fromCategory(ride.vehicle?.category),
-            ),
+          SchematicMap(
+            height: 260,
+            origin: ride.pickup.point,
+            destination: ride.destination.point,
+            route: route,
+            marker: marker,
+            vehicle: VehicleKind.fromCategory(ride.vehicle?.category),
+            markerMascot: mascot,
+            bearing: bearing,
+            isMoving: travelling,
           ),
           const SizedBox(height: AppSpacing.md),
           AppCard(
@@ -104,12 +103,12 @@ class _TrackingBody extends ConsumerWidget {
               children: [
                 Row(
                   children: [
-                    const Icon(
-                      Icons.schedule_rounded,
-                      size: 18,
-                      color: AppColors.primaryIndigo,
+                    Mascot(
+                      variant: mascot,
+                      size: MascotSize.small,
+                      animation: MascotAnimation.none,
                     ),
-                    const SizedBox(width: AppSpacing.xs),
+                    const SizedBox(width: AppSpacing.sm),
                     const Expanded(
                       child: Text(
                         'Simulated progress',

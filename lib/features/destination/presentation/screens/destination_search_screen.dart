@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
+import '../../../../core/constants/mascot_assets.dart';
 import '../../../../core/navigation/app_routes.dart';
 import '../../../../core/widgets/app_card.dart';
 import '../../../../core/widgets/app_inputs.dart';
@@ -154,6 +155,7 @@ class _Results extends ConsumerWidget {
             'the bundled offline dataset.',
         actionLabel: 'Show all demo places',
         onAction: () => onChoose(bundle.locations.first),
+        mascot: MascotVariant.error,
       );
     }
 

@@ -6,11 +6,13 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_constants.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/constants/app_typography.dart';
+import '../../../../core/constants/mascot_assets.dart';
 import '../../../../core/navigation/app_routes.dart';
 import '../../../../core/widgets/app_card.dart';
 import '../../../../core/widgets/app_page.dart';
 import '../../../../core/widgets/app_states.dart';
 import '../../../../core/widgets/fixture_gate.dart';
+import '../../../../core/widgets/mascot.dart';
 import '../../../../domain/entities/fixtures.dart';
 import '../../../../domain/repositories/fixture_repository.dart';
 import '../../application/food_controller.dart';
@@ -87,7 +89,9 @@ class _BrowseBody extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        const AppNotice(
+        const MascotBanner(
+          variant: MascotVariant.food,
+          title: 'Hungry? The demo kitchen is open',
           message:
               'Every restaurant, dish, and price below is fictional demo data '
               'bundled with the app. No real delivery is arranged.',
@@ -121,6 +125,7 @@ class _BrowseBody extends ConsumerWidget {
             message: 'Try a different filter to see the bundled restaurants.',
             actionLabel: 'Show all',
             onAction: () => onCategoryChanged(null),
+            mascot: MascotVariant.food,
           )
         else
           for (final restaurant in visible) ...[

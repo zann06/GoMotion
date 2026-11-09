@@ -36,11 +36,10 @@ Future<void> main() async {
   runApp(
     UncontrolledProviderScope(
       container: container,
-      child: GoMotionApp(
-        // First launch opens the welcome screen; afterwards go straight home.
-        initialLocation: preferences.hasSeenOnboarding
-            ? null
-            : AppRoutes.onboarding,
+      child: const GoMotionApp(
+        // Every cold start shows the mascot splash, which then routes to the
+        // welcome screen on a first launch and to the dashboard afterwards.
+        initialLocation: AppRoutes.splash,
       ),
     ),
   );

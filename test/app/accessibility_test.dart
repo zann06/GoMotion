@@ -17,6 +17,7 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   const routes = <String>[
+    AppRoutes.splash,
     AppRoutes.home,
     AppRoutes.onboarding,
     AppRoutes.destinationSearch,

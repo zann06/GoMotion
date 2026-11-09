@@ -8,10 +8,12 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_icons.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/constants/app_typography.dart';
+import '../../../../core/constants/mascot_assets.dart';
 import '../../../../core/navigation/app_routes.dart';
 import '../../../../core/widgets/app_card.dart';
 import '../../../../core/widgets/app_page.dart';
 import '../../../../core/widgets/fixture_gate.dart';
+import '../../../../core/widgets/mascot.dart';
 import '../../../../core/widgets/schematic_map.dart';
 import '../../../../domain/entities/fixtures.dart';
 import '../../application/active_journey_provider.dart';
@@ -149,7 +151,7 @@ class _JourneyCard extends ConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Expanded(
                 child: Column(
@@ -164,10 +166,13 @@ class _JourneyCard extends ConsumerWidget {
                       'Where would you like to go?',
                       style: AppTypography.onGradientBody,
                     ),
+                    SizedBox(height: AppSpacing.sm),
+                    StatusPill(label: 'Demo', tone: PillTone.onGradient),
                   ],
                 ),
               ),
-              StatusPill(label: 'Demo', tone: PillTone.onGradient),
+              SizedBox(width: AppSpacing.sm),
+              Mascot(variant: MascotVariant.hero, size: MascotSize.medium),
             ],
           ),
           const SizedBox(height: AppSpacing.md),

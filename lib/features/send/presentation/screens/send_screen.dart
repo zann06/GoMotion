@@ -6,11 +6,13 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_constants.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/constants/app_typography.dart';
+import '../../../../core/constants/mascot_assets.dart';
 import '../../../../core/navigation/app_routes.dart';
 import '../../../../core/widgets/app_card.dart';
 import '../../../../core/widgets/app_inputs.dart';
 import '../../../../core/widgets/app_page.dart';
 import '../../../../core/widgets/app_states.dart';
+import '../../../../core/widgets/mascot.dart';
 import '../../../../core/widgets/primary_button.dart';
 import '../../../../domain/entities/parcel_delivery.dart';
 import '../../application/send_controller.dart';
@@ -108,7 +110,9 @@ class _SendScreenState extends ConsumerState<SendScreen> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          const AppNotice(
+          const MascotBanner(
+            variant: MascotVariant.send,
+            title: 'Your demo courier is ready',
             message:
                 'All names and addresses you enter stay on this device and are '
                 'never transmitted. Use fictional details.',

@@ -6,10 +6,12 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_constants.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/constants/app_typography.dart';
+import '../../../../core/constants/mascot_assets.dart';
 import '../../../../core/navigation/app_routes.dart';
 import '../../../../core/widgets/app_card.dart';
 import '../../../../core/widgets/app_page.dart';
 import '../../../../core/widgets/app_states.dart';
+import '../../../../core/widgets/mascot.dart';
 import '../../../../core/widgets/primary_button.dart';
 import '../../application/food_controller.dart';
 
@@ -61,23 +63,15 @@ class FoodReceiptScreen extends ConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
+                const Row(
                   children: [
-                    Container(
-                      width: 40,
-                      height: 40,
-                      decoration: const BoxDecoration(
-                        color: AppColors.successTint,
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Icon(
-                        Icons.check_rounded,
-                        color: AppColors.success,
-                        size: 22,
-                      ),
+                    Mascot(
+                      variant: MascotVariant.success,
+                      animation: MascotAnimation.happy,
+                      size: MascotSize.small,
                     ),
-                    const SizedBox(width: AppSpacing.sm),
-                    const Expanded(
+                    SizedBox(width: AppSpacing.sm),
+                    Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [

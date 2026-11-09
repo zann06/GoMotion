@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'mascot_assets.dart';
+
 /// The simulated vehicle shapes used across the ride flow and the schematic map.
 ///
 /// Kept separate from the fixture entity so widgets and the map painter can share
@@ -26,6 +28,16 @@ enum VehicleKind {
     VehicleKind.motorbike => 'demo motorbike',
     VehicleKind.car => 'demo car',
     VehicleKind.premium => 'demo premium car',
+  };
+
+  /// The mascot pose that matches this vehicle.
+  ///
+  /// The mascot rides two-wheelers and drives cars, so the marker on the map is
+  /// the character rather than a bare vehicle glyph.
+  MascotVariant get mascotVariant => switch (this) {
+    VehicleKind.motorbike => MascotVariant.ride,
+    VehicleKind.car => MascotVariant.car,
+    VehicleKind.premium => MascotVariant.car,
   };
 
   /// Maps a fixture vehicle category (`GoRide`, `GoCar`, `GoCar Premium`) to a

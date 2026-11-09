@@ -6,6 +6,7 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_constants.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/constants/app_typography.dart';
+import '../../../../core/constants/mascot_assets.dart';
 import '../../../../core/navigation/app_routes.dart';
 import '../../../../core/widgets/app_card.dart';
 import '../../../../core/widgets/app_page.dart';
@@ -16,6 +17,7 @@ import '../../../../core/widgets/schematic_map.dart';
 import '../../../../domain/entities/fixtures.dart';
 import '../../../../domain/entities/parcel_delivery.dart';
 import '../../../../domain/repositories/fixture_repository.dart';
+import '../../../../domain/services/route_geometry.dart';
 import '../../application/send_controller.dart';
 
 /// Courier matching and parcel transit tracking.
@@ -129,8 +131,10 @@ class _TrackingBody extends ConsumerWidget {
             origin: origin,
             destination: home,
             route: [origin, home],
-            marker: MapPoint.lerp(origin, home, progress),
-            markerIcon: Icons.two_wheeler_rounded,
+            marker: RouteGeometry.pointAt([origin, home], progress),
+            markerMascot: MascotVariant.send,
+            bearing: RouteGeometry.bearingAt([origin, home], progress),
+            isMoving: parcel.stage == SendStage.inTransit,
           ),
           const SizedBox(height: AppSpacing.md),
           AppCard(

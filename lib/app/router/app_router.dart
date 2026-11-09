@@ -28,6 +28,7 @@ import '../../features/send/presentation/screens/send_screen.dart';
 import '../../features/send/presentation/screens/send_tracking_screen.dart';
 import '../../features/settings/presentation/screens/about_screen.dart';
 import '../../features/settings/presentation/screens/settings_screen.dart';
+import '../../features/splash/presentation/screens/splash_screen.dart';
 import '../router/app_shell.dart';
 
 /// Builds the GoMotion [GoRouter] configuration.
@@ -47,6 +48,12 @@ GoRouter buildRouter({
     observers: observers,
     debugLogDiagnostics: false,
     routes: [
+      // Cold-start splash. Lives outside the shell so it owns the full screen.
+      GoRoute(
+        path: AppRoutes.splash,
+        name: AppRoutes.splashName,
+        builder: (context, state) => const SplashScreen(),
+      ),
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) =>
             AppShell(shell: navigationShell),

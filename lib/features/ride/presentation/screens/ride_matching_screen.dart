@@ -9,11 +9,13 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_constants.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/constants/app_typography.dart';
+import '../../../../core/constants/mascot_assets.dart';
 import '../../../../core/navigation/app_routes.dart';
 import '../../../../core/widgets/app_card.dart';
 import '../../../../core/widgets/app_page.dart';
 import '../../../../core/widgets/app_states.dart';
 import '../../../../core/widgets/fixture_gate.dart';
+import '../../../../core/widgets/mascot.dart';
 import '../../../../core/widgets/primary_button.dart';
 import '../../../../domain/entities/fixtures.dart';
 import '../../../../domain/entities/ride.dart';
@@ -222,9 +224,16 @@ class _Radar extends ConsumerWidget {
       child: SizedBox(
         height: 220,
         child: Center(
-          child: motion.allowLoops
-              ? const _SpinningRadar()
-              : const _StaticRadar(),
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              motion.allowLoops ? const _SpinningRadar() : const _StaticRadar(),
+              const Mascot(
+                variant: MascotVariant.ride,
+                size: MascotSize.medium,
+              ),
+            ],
+          ),
         ),
       ),
     );
