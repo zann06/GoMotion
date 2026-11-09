@@ -1,5 +1,21 @@
 # Acceptance Checklist
 
+> Status markers: `[x]` verified, `[ ]` outstanding. Only Phase 0 and the Phase 1
+> foundation are implemented so far; everything below the foundation line
+> remains outstanding and must not be reported as done.
+
+## Foundation (Phase 0) — complete
+- [x] Flutter application scaffold for Android and iOS with pinned dependencies.
+- [x] Feature-first Clean Architecture folder structure.
+- [x] All nine JSON fixtures parse and pass referential-integrity validation.
+- [x] Malformed fixtures raise a typed `FixtureFailure` rather than defaulting
+      (covered by dedicated strictness tests).
+- [x] Design tokens, light theme, and brand palette established.
+- [x] Deterministic simulation clock and seeded driver assigner.
+- [x] `dart format .`, `flutter analyze`, and `flutter test` pass (45 tests).
+- [x] CI workflow runs format, analyze, and test on push and pull request.
+- [x] Android manifest requests no `INTERNET` or location permission.
+
 ## Product and design
 - [ ] GoMotion name/tagline and original mark are used consistently.
 - [ ] Indigo/blue/violet palette is primary; green is semantic only.

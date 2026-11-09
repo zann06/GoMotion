@@ -1,0 +1,222 @@
+import 'package:flutter/material.dart';
+
+import '../constants/app_colors.dart';
+import '../constants/app_spacing.dart';
+import '../constants/app_typography.dart';
+import 'primary_button.dart';
+
+/// A screen-level loading state with a shimmering skeleton.
+///
+/// Skeletons are preferred over spinners for list-shaped content because they
+/// communicate the shape of what is arriving.
+class AppSkeletonList extends StatelessWidget {
+  const AppSkeletonList({this.itemCount = 3, this.itemHeight = 84, super.key});
+
+  final int itemCount;
+  final double itemHeight;
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView.separated(
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.pageGutter,
+        vertical: AppSpacing.md,
+      ),
+      itemCount: itemCount,
+      separatorBuilder: (_, _) => const SizedBox(height: AppSpacing.sm),
+      itemBuilder: (_, _) => _ShimmerBlock(height: itemHeight),
+    );
+  }
+}
+
+/// A single shimmering placeholder block.
+class _ShimmerBlock extends StatefulWidget {
+  const _ShimmerBlock({required this.height});
+
+  final double height;
+
+  @override
+  State<_ShimmerBlock> createState() => _ShimmerBlockState();
+}
+
+class _ShimmerBlockState extends State<_ShimmerBlock>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 1400),
+  );
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Honour reduced motion: hold the placeholder still instead of sweeping.
+    final reduce = MediaQuery.maybeDisableAnimationsOf(context) ?? false;
+    if (reduce) {
+      _controller.stop();
+      _controller.value = 0.4;
+    } else if (!_controller.isAnimating) {
+      _controller.repeat();
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return RepaintBoundary(
+      child: AnimatedBuilder(
+        animation: _controller,
+        builder: (context, _) {
+          final t = _controller.value;
+          return Container(
+            height: widget.height,
+            decoration: BoxDecoration(
+              borderRadius: AppRadius.card,
+              gradient: LinearGradient(
+                begin: Alignment(-1 + t * 2, 0),
+                end: Alignment(t * 2, 0),
+                colors: const [
+                  AppColors.skeleton,
+                  Color(0xFFF7F8FE),
+                  AppColors.skeleton,
+                ],
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+}
+
+/// A friendly empty state that always offers a local next action.
+///
+/// `docs/UI_UX_GUIDELINES.md` requires explaining why a list is empty and
+/// offering a local next step.
+class AppEmptyState extends StatelessWidget {
+  const AppEmptyState({
+    required this.icon,
+    required this.title,
+    required this.message,
+    this.actionLabel,
+    this.onAction,
+    super.key,
+  });
+
+  final IconData icon;
+  final String title;
+  final String message;
+  final String? actionLabel;
+  final VoidCallback? onAction;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(AppSpacing.xl),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 64,
+              height: 64,
+              decoration: const BoxDecoration(
+                color: AppColors.indigoTint,
+                shape: BoxShape.circle,
+              ),
+              child: Icon(icon, size: 28, color: AppColors.primaryIndigo),
+            ),
+            const SizedBox(height: AppSpacing.md),
+            Text(
+              title,
+              style: AppTypography.section,
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: AppSpacing.xs),
+            Text(
+              message,
+              style: AppTypography.bodyMuted,
+              textAlign: TextAlign.center,
+            ),
+            if (actionLabel != null && onAction != null) ...[
+              const SizedBox(height: AppSpacing.lg),
+              SizedBox(
+                width: 220,
+                child: TonalButton(label: actionLabel!, onPressed: onAction),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// A recoverable error state.
+///
+/// Never displays stack traces or asset paths; the technical cause stays in
+/// debug logs, per `docs/ARCHITECTURE.md`.
+class AppErrorState extends StatelessWidget {
+  const AppErrorState({
+    required this.title,
+    required this.message,
+    this.onRetry,
+    this.retryLabel = 'Try again',
+    super.key,
+  });
+
+  final String title;
+  final String message;
+  final VoidCallback? onRetry;
+  final String retryLabel;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(AppSpacing.xl),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 64,
+              height: 64,
+              decoration: const BoxDecoration(
+                color: AppColors.errorTint,
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(
+                Icons.error_outline_rounded,
+                size: 28,
+                color: AppColors.error,
+              ),
+            ),
+            const SizedBox(height: AppSpacing.md),
+            Text(
+              title,
+              style: AppTypography.section,
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: AppSpacing.xs),
+            Text(
+              message,
+              style: AppTypography.bodyMuted,
+              textAlign: TextAlign.center,
+            ),
+            if (onRetry != null) ...[
+              const SizedBox(height: AppSpacing.lg),
+              SizedBox(
+                width: 220,
+                child: TonalButton(label: retryLabel, onPressed: onRetry),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+}
