@@ -12,6 +12,7 @@ import '../../../../core/widgets/app_card.dart';
 import '../../../../core/widgets/app_page.dart';
 import '../../../../core/widgets/fixture_gate.dart';
 import '../../../../core/widgets/schematic_map.dart';
+import '../../application/active_journey_provider.dart';
 import '../widgets/demo_avatar.dart';
 
 /// The home dashboard: greeting, destination entry point, demo map, service
@@ -27,6 +28,7 @@ class HomeScreen extends ConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           HomeGreeting(),
+          _ActiveJourneyBanner(),
           SizedBox(height: AppSpacing.lg),
           _JourneyCard(),
           SizedBox(height: AppSpacing.md),
@@ -43,6 +45,83 @@ class HomeScreen extends ConsumerWidget {
   }
 }
 
+/// A resume card shown when a demo journey is still in progress.
+///
+/// Tapping reopens the exact live screen rather than letting a fresh draft
+/// discard the journey the user already started.
+class _ActiveJourneyBanner extends ConsumerWidget {
+  const _ActiveJourneyBanner();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final journey = ref.watch(activeJourneyProvider);
+    if (journey == null) return const SizedBox.shrink();
+
+    return Padding(
+      padding: const EdgeInsets.only(top: AppSpacing.lg),
+      child: AppCard(
+        onTap: () => context.push(journey.location),
+        semanticLabel:
+            '${journey.kind.label} in progress: ${journey.title}. '
+            '${journey.actionLabel}',
+        child: Row(
+          children: [
+            Container(
+              width: 44,
+              height: 44,
+              decoration: const BoxDecoration(
+                color: AppColors.indigoTint,
+                borderRadius: AppRadius.tile,
+              ),
+              child: Icon(
+                _iconFor(journey.kind),
+                color: AppColors.primaryIndigo,
+                size: 22,
+              ),
+            ),
+            const SizedBox(width: AppSpacing.sm),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    '${journey.kind.label} in progress',
+                    style: AppTypography.caption,
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    journey.title,
+                    style: AppTypography.itemTitle,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  Text(
+                    journey.detail,
+                    style: AppTypography.caption,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: AppSpacing.xs),
+            TonalButtonInline(
+              label: journey.actionLabel,
+              onPressed: () => context.push(journey.location),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  static IconData _iconFor(ActiveJourneyKind kind) => switch (kind) {
+    ActiveJourneyKind.ride => Icons.directions_car_filled_rounded,
+    ActiveJourneyKind.food => Icons.restaurant_rounded,
+    ActiveJourneyKind.send => Icons.inventory_2_rounded,
+  };
+}
+
 /// The gradient "Your next journey" card containing the destination entry.
 ///
 /// Tapping anywhere on the search field or the card opens destination search,
@@ -53,73 +132,72 @@ class _JourneyCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final motion = ref.watch(reduceMotionProvider);
-    return Container(
-          decoration: const BoxDecoration(
-            gradient: AppColors.heroGradient,
-            borderRadius: AppRadius.hero,
+    final card = Container(
+      decoration: const BoxDecoration(
+        gradient: AppColors.heroGradient,
+        borderRadius: AppRadius.hero,
+      ),
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.lg,
+        AppSpacing.lg,
+        AppSpacing.lg,
+        AppSpacing.md,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text('Your next journey', style: AppTypography.onGradientTitle),
+          const SizedBox(height: AppSpacing.xxs),
+          const Text(
+            'Where would you like to go?',
+            style: AppTypography.onGradientBody,
           ),
-          padding: const EdgeInsets.fromLTRB(
-            AppSpacing.lg,
-            AppSpacing.lg,
-            AppSpacing.lg,
-            AppSpacing.md,
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                'Your next journey',
-                style: AppTypography.onGradientTitle,
-              ),
-              const SizedBox(height: AppSpacing.xxs),
-              const Text(
-                'Where would you like to go?',
-                style: AppTypography.onGradientBody,
-              ),
-              const SizedBox(height: AppSpacing.md),
-              Semantics(
-                button: true,
-                label: 'Search destination',
-                child: Material(
-                  color: AppColors.white,
-                  borderRadius: AppRadius.button,
-                  child: InkWell(
-                    borderRadius: AppRadius.button,
-                    onTap: () =>
-                        context.pushNamed(AppRoutes.destinationSearchName),
-                    child: Container(
-                      height: 52,
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: AppSpacing.md,
+          const SizedBox(height: AppSpacing.md),
+          Semantics(
+            button: true,
+            label: 'Search destination',
+            child: Material(
+              color: AppColors.white,
+              borderRadius: AppRadius.button,
+              child: InkWell(
+                borderRadius: AppRadius.button,
+                onTap: () => context.pushNamed(AppRoutes.destinationSearchName),
+                child: Container(
+                  height: 52,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.md,
+                  ),
+                  child: const Row(
+                    children: [
+                      Icon(
+                        Icons.search_rounded,
+                        size: 20,
+                        color: AppColors.neutralGray,
                       ),
-                      child: const Row(
-                        children: [
-                          Icon(
-                            Icons.search_rounded,
-                            size: 20,
-                            color: AppColors.neutralGray,
-                          ),
-                          SizedBox(width: AppSpacing.sm),
-                          Expanded(
-                            child: Text(
-                              'Search destination',
-                              style: AppTypography.bodyMuted,
-                            ),
-                          ),
-                        ],
+                      SizedBox(width: AppSpacing.sm),
+                      Expanded(
+                        child: Text(
+                          'Search destination',
+                          style: AppTypography.bodyMuted,
+                        ),
                       ),
-                    ),
+                    ],
                   ),
                 ),
               ),
-            ],
+            ),
           ),
-        )
-        .animate(
-          target: motion.decorative == Duration.zero ? 0 : 1,
-          autoPlay: motion.decorative != Duration.zero,
-        )
-        .fadeIn(duration: motion.resolve(AppDuration.enter))
+        ],
+      ),
+    );
+
+    // Reduced motion must never hide content: skip the entrance animation
+    // entirely instead of parking the controller on its invisible first frame.
+    if (motion.enabled) return card;
+
+    return card
+        .animate()
+        .fadeIn(duration: AppDuration.enter)
         .slideY(begin: 0.03, end: 0, curve: Curves.easeOutCubic);
   }
 }
@@ -171,24 +249,34 @@ class _ServiceShortcuts extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final motion = ref.watch(reduceMotionProvider);
+    final active = ref.watch(activeJourneyProvider);
+
+    // A service tile resumes its live journey instead of starting over.
+    String locationFor(ActiveJourneyKind kind, String fallback) =>
+        active?.kind == kind ? active!.location : fallback;
+
     final services = <_Service>[
       _Service(
         label: 'Ride',
         icon: Icons.directions_car_filled_rounded,
         color: AppColors.primaryIndigo,
-        onTap: () => context.pushNamed(AppRoutes.destinationSearchName),
+        onTap: () => context.push(
+          locationFor(ActiveJourneyKind.ride, AppRoutes.destinationSearch),
+        ),
       ),
       _Service(
         label: 'Food',
         icon: Icons.restaurant_rounded,
         color: AppColors.electricBlue,
-        onTap: () => context.pushNamed(AppRoutes.foodName),
+        onTap: () =>
+            context.push(locationFor(ActiveJourneyKind.food, AppRoutes.food)),
       ),
       _Service(
         label: 'Send',
         icon: Icons.inventory_2_rounded,
         color: AppColors.violet,
-        onTap: () => context.pushNamed(AppRoutes.sendName),
+        onTap: () =>
+            context.push(locationFor(ActiveJourneyKind.send, AppRoutes.send)),
       ),
       _Service(
         label: 'Rewards',

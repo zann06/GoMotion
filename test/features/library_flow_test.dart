@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:gomotion/app/providers/app_providers.dart';
+import 'package:gomotion/app/providers/reduced_motion_provider.dart';
 import 'package:gomotion/core/errors/app_failure.dart';
 import 'package:gomotion/data/preferences/preferences_store.dart';
 import 'package:gomotion/domain/entities/activity_record.dart';
@@ -302,6 +303,17 @@ void main() {
 
       await container.read(simulationResetProvider).run();
       expect(prefs.hasSeenOnboarding, isFalse);
+    });
+
+    test('reset clears the in-app reduced-motion override', () async {
+      final (container, _, _) = await _harness();
+      addTearDown(container.dispose);
+
+      container.read(inAppReduceMotionProvider.notifier).set(true);
+      expect(container.read(inAppReduceMotionProvider), isTrue);
+
+      await container.read(simulationResetProvider).run();
+      expect(container.read(inAppReduceMotionProvider), isFalse);
     });
   });
 }

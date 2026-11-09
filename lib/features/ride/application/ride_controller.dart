@@ -103,8 +103,15 @@ class RideController extends Notifier<RideState> {
   /// Chooses a vehicle category and quotes the fare.
   ///
   /// Choosing a different vehicle replaces the existing quote, so the review
-  /// total always matches the selected card.
-  void selectVehicle(Vehicle vehicle, {Promo? promo}) {
+  /// total always matches the selected card. An already-applied promo is kept
+  /// whenever it is still eligible for the new fare, so switching vehicles does
+  /// not silently drop a valid discount. Pass [preservePromo] as `false` (or an
+  /// explicit [promo]) to override that behaviour.
+  void selectVehicle(
+    Vehicle vehicle, {
+    Promo? promo,
+    bool preservePromo = true,
+  }) {
     final ride = state.ride;
     if (ride == null) return;
 
@@ -112,10 +119,27 @@ class RideController extends Notifier<RideState> {
       ride.pickup.point,
       ride.destination.point,
     );
+    final subtotal = FareEngine.quote(
+      vehicle: vehicle,
+      distanceKm: distance,
+    ).subtotal;
+
+    // An explicitly supplied promo wins. Otherwise keep the promo already on the
+    // ride when it still passes the new vehicle's minimum spend.
+    Promo? effective = promo;
+    if (effective == null && preservePromo && ride.promoCode != null) {
+      final existing = _bundle.promoByCode(ride.promoCode!);
+      if (existing != null &&
+          existing.active &&
+          existing.eligibleFor(subtotal)) {
+        effective = existing;
+      }
+    }
+
     final quote = FareEngine.quote(
       vehicle: vehicle,
       distanceKm: distance,
-      promo: promo,
+      promo: effective,
     );
 
     state = RideState(
@@ -125,8 +149,8 @@ class RideController extends Notifier<RideState> {
         vehicle: vehicle,
         fare: quote,
         promoCode: quote.promoCode,
-        // Switching to a vehicle without an applied promo must drop the old
-        // code, otherwise the review badge outlives the discount.
+        // A quote without a promo must drop the old code, otherwise the review
+        // badge outlives the discount.
         clearPromo: quote.promoCode == null,
       ),
     );
@@ -168,7 +192,7 @@ class RideController extends Notifier<RideState> {
     final ride = state.ride;
     final vehicle = ride?.vehicle;
     if (ride == null || vehicle == null) return;
-    selectVehicle(vehicle);
+    selectVehicle(vehicle, preservePromo: false);
   }
 
   /// Confirms the booking and starts the radar search.
@@ -323,6 +347,10 @@ class RideController extends Notifier<RideState> {
     if (isWallet) {
       ref.read(profileProvider.notifier).debitWallet(total);
     }
+
+    // Completing a demo journey always earns fictional reward points, whatever
+    // the payment method, so the rewards catalogue is actually reachable.
+    ref.read(profileProvider.notifier).addPoints(AppInfo.demoPointsPerJourney);
 
     ref
         .read(activityProvider.notifier)

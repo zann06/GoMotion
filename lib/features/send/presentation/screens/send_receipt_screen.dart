@@ -119,6 +119,10 @@ class SendReceiptScreen extends ConsumerWidget {
                   value: Currency.format(parcel.total),
                   emphasize: true,
                 ),
+                const DetailRow(
+                  label: 'Demo points earned',
+                  value: '+${AppInfo.demoPointsPerJourney} ${DemoCopy.points}',
+                ),
                 const SizedBox(height: AppSpacing.xs),
                 const Text(DemoCopy.transaction, style: AppTypography.caption),
               ],

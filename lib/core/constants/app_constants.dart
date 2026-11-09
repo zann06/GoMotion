@@ -18,6 +18,12 @@ abstract final class AppInfo {
   /// Tests override the assigned seed through the fixture repository's ride id,
   /// so this stays a single stable constant in production.
   static const int simulationSeed = SimulationTiming.defaultSeed;
+
+  /// Fictional reward points granted when a demo journey completes.
+  ///
+  /// Awarded once per paid ride, delivered order, and delivered parcel so the
+  /// rewards in `rewards.json` are reachable within a single session.
+  static const int demoPointsPerJourney = 50;
 }
 
 /// Reusable honesty labels required by `docs/SECURITY_AND_PRIVACY.md`.

@@ -99,7 +99,11 @@ class _MatchingBodyState extends ConsumerState<_MatchingBody> {
       subtitle: isSearching
           ? 'Searching the local demo dataset'
           : 'Driver information is fictional sample data',
-      leading: const AppBackButton(),
+      // Return to the dashboard rather than a stale vehicle selection; the
+      // search keeps running and home surfaces it as an active journey.
+      leading: AppBackButton(
+        onPressed: () => context.goNamed(AppRoutes.homeName),
+      ),
       footer: hasDriver
           ? Column(
               mainAxisSize: MainAxisSize.min,

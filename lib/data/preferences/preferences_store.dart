@@ -3,8 +3,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 /// Storage for the only data that may be persisted.
 ///
 /// `docs/ARCHITECTURE.md` permits SharedPreferences for simple preferences
-/// only: onboarding completion, reduced motion, and theme choice. Nothing
-/// sensitive, and never simulated money or activity history.
+/// only: onboarding completion and reduced motion. Nothing sensitive, and never
+/// simulated money or activity history.
 abstract interface class PreferencesStore {
   bool get hasSeenOnboarding;
   Future<void> setHasSeenOnboarding(bool value);

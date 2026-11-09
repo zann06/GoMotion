@@ -2,6 +2,46 @@
 
 All notable changes to GoMotion will be documented here.
 
+## [0.1.1] - 2026-11-10
+
+Polish pass fixing remaining bugs and gaps found while auditing the demo, with
+no changes to the offline architecture or the brand.
+
+### Fixed
+- Home journey card no longer disappears under reduced motion. It previously
+  parked its entrance controller at the invisible first frame; the entrance
+  animation is now skipped entirely when motion is reduced.
+- GoFood state is guarded: adding, stepping, clearing, and a second checkout are
+  refused once an order leaves the editable cart stages, so a delivered or
+  in-flight order can never be re-checked-out or re-charged.
+- A completed GoFood order now starts a fresh order id instead of reusing the
+  delivered one, preventing its activity record from colliding.
+- Re-selecting a vehicle no longer silently drops an already-applied promo
+  discount; the promo is kept while it is still eligible for the new fare, and
+  an explicit remove still clears it.
+- Reset now clears the in-app reduced-motion override along with the rest of the
+  simulation state.
+- Back from ride payment and ride matching returns to the dashboard instead of a
+  stale vehicle-selection screen left behind by the push-replacement chain.
+
+### Added
+- Fictional reward points are awarded on every completed demo journey (paid
+  ride, delivered order, delivered parcel), making the rewards catalogue
+  reachable within a session. Receipts show the points earned.
+- Active-journey resume: the dashboard surfaces a resume card for a ride, order,
+  or parcel in progress, and the Ride/Food/Send shortcuts reopen the live screen
+  instead of discarding the journey behind a new draft.
+
+### Documentation
+- Removed the inaccurate "theme choice" persistence claim from the README and
+  the preferences store doc comment; the app stores only onboarding and the
+  reduced-motion override.
+
+### Verification
+- `dart format .` clean, `flutter analyze` clean, `flutter test` passes 135
+  tests (was 123), adding coverage for points, cart locking, promo retention,
+  reduced-motion home visibility, active-journey resume, and motion reset.
+
 ## [0.1.0] - 2026-11-09
 
 First complete offline release: all ten roadmap phases in

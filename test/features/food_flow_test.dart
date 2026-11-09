@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:gomotion/app/providers/app_providers.dart';
 import 'package:gomotion/core/constants/app_constants.dart';
+import 'package:gomotion/core/errors/app_failure.dart';
 import 'package:gomotion/data/preferences/preferences_store.dart';
 import 'package:gomotion/data/repositories/json_fixture_repository.dart';
 import 'package:gomotion/domain/entities/activity_record.dart';
@@ -208,6 +209,82 @@ void main() {
 
       clock.advance(const Duration(minutes: 5));
       expect(container.read(activityProvider), isEmpty);
+    });
+
+    test('cart edits are locked once checkout begins', () async {
+      final (container, _, bundle) = await _harness();
+      addTearDown(container.dispose);
+
+      final food = container.read(foodProvider.notifier);
+      final restaurant = bundle.restaurants.first;
+      final item = bundle.menuFor(restaurant.id).first;
+
+      food.selectRestaurant(restaurant);
+      expect(food.addItem(item), isNull);
+      expect(food.beginCheckout(), isNull);
+
+      // No further edits, and the checkout cannot be entered twice.
+      expect(food.addItem(item), isNotNull);
+      expect(container.read(foodProvider).order!.itemCount, 1);
+      expect(food.beginCheckout(), isA<InvalidTransitionFailure>());
+      expect(container.read(foodProvider).stage, FoodStage.checkout);
+
+      // Quantity steppers must also be inert outside the editable stages.
+      food.incrementItem(item.id);
+      food.removeItem(item.id);
+      expect(container.read(foodProvider).order!.itemCount, 1);
+    });
+
+    test('a delivered order cannot be edited or re-checked-out', () async {
+      final (container, clock, bundle) = await _harness();
+      addTearDown(container.dispose);
+
+      final food = container.read(foodProvider.notifier);
+      final restaurant = bundle.restaurants.first;
+      final item = bundle.menuFor(restaurant.id).first;
+
+      food.selectRestaurant(restaurant);
+      food.addItem(item);
+      food.beginCheckout();
+      food.placeOrder(paymentMethod: FoodPayment.cash);
+      clock.advance(SimulationTiming.courierMatching);
+      clock.advance(SimulationTiming.preparing);
+      clock.advance(SimulationTiming.inTransit);
+      expect(container.read(foodProvider).stage, FoodStage.delivered);
+
+      expect(food.addItem(item), isNotNull);
+      expect(food.beginCheckout(), isA<InvalidTransitionFailure>());
+      expect(container.read(foodProvider).stage, FoodStage.delivered);
+    });
+
+    test('delivering an order rewards demo points exactly once', () async {
+      final (container, clock, bundle) = await _harness();
+      addTearDown(container.dispose);
+
+      final food = container.read(foodProvider.notifier);
+      final restaurant = bundle.restaurants.first;
+      food.selectRestaurant(restaurant);
+      food.addItem(bundle.menuFor(restaurant.id).first);
+      food.beginCheckout();
+
+      final pointsBefore = container.read(profileProvider).rewardPoints;
+      food.placeOrder(paymentMethod: FoodPayment.cash);
+      clock.advance(SimulationTiming.courierMatching);
+      clock.advance(SimulationTiming.preparing);
+      clock.advance(SimulationTiming.inTransit);
+
+      expect(container.read(foodProvider).stage, FoodStage.delivered);
+      expect(
+        container.read(profileProvider).rewardPoints,
+        pointsBefore + AppInfo.demoPointsPerJourney,
+      );
+
+      // Later ticks must not award the same journey twice.
+      clock.advance(const Duration(minutes: 5));
+      expect(
+        container.read(profileProvider).rewardPoints,
+        pointsBefore + AppInfo.demoPointsPerJourney,
+      );
     });
   });
 }

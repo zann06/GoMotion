@@ -36,7 +36,7 @@ The app opens on the welcome screen the first time. Use the in-app reset in
 - No runtime dependency on HTTP, Firebase, Supabase, mapping APIs, GPS, or payment gateways. The runtime has no HTTP client at all.
 - The release Android manifest declares no `INTERNET` or location permission, so the OS blocks network access even in principle.
 - All content comes from nine bundled JSON fixtures plus original bundled artwork.
-- `shared_preferences` stores only local preferences: onboarding seen, reduced-motion override, and theme choice. No personal data is collected.
+- `shared_preferences` stores only local preferences: onboarding seen and the reduced-motion override. No personal data is collected.
 
 ## Quality gates
 ```bash

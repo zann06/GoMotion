@@ -113,6 +113,10 @@ class FoodReceiptScreen extends ConsumerWidget {
                   value: Currency.format(order.total),
                   emphasize: true,
                 ),
+                const DetailRow(
+                  label: 'Demo points earned',
+                  value: '+${AppInfo.demoPointsPerJourney} ${DemoCopy.points}',
+                ),
                 DetailRow(
                   label: 'Payment',
                   value: order.paymentMethod == FoodPayment.demoWallet

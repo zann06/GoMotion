@@ -67,12 +67,21 @@ class FoodController extends Notifier<FoodState> {
     return state.generation + 1;
   }
 
-  /// Opens [restaurant], discarding any cart from a different restaurant.
+  /// Opens [restaurant], keeping an in-progress cart from the same restaurant.
+  ///
+  /// Once an order leaves the editable cart stages (or is already delivered) a
+  /// fresh order with a new id is created, so a completed order can never be
+  /// re-used or re-charged and its activity record can never collide.
   void selectRestaurant(Restaurant restaurant) {
     final existing = state.order;
+
+    // Never clobber a live order: once a courier is matching or moving, the
+    // order is owned by the tracking flow until it is delivered or cancelled.
+    if (existing != null && existing.stage.isLive) return;
+
     final sameRestaurant = existing?.restaurantId == restaurant.id;
 
-    if (existing != null && sameRestaurant) {
+    if (existing != null && sameRestaurant && existing.stage.isEditable) {
       // Keep the cart when re-opening the same restaurant.
       state = FoodState(
         generation: state.generation,
@@ -89,7 +98,7 @@ class FoodController extends Notifier<FoodState> {
     state = FoodState(
       generation: generation,
       order: FoodOrder(
-        id: existing?.id ?? 'food_${DateTime.now().microsecondsSinceEpoch}',
+        id: 'food_${DateTime.now().microsecondsSinceEpoch}',
         stage: FoodStage.restaurantSelected,
         restaurantId: restaurant.id,
         restaurantName: restaurant.name,
@@ -121,6 +130,12 @@ class FoodController extends Notifier<FoodState> {
     }
 
     var order = state.order;
+    if (order != null && !order.stage.isEditable) {
+      return const ValidationFailure(
+        field: 'cart',
+        message: 'This demo order is already in progress.',
+      );
+    }
     if (order == null) {
       final restaurant = _bundle.restaurant(item.restaurantId);
       order = FoodOrder(
@@ -168,7 +183,7 @@ class FoodController extends Notifier<FoodState> {
   /// for an item that is not already in the cart.
   void incrementItem(String itemId) {
     final order = state.order;
-    if (order == null) return;
+    if (order == null || !order.stage.isEditable) return;
 
     final index = order.lines.indexWhere((l) => l.itemId == itemId);
     if (index < 0) return;
@@ -185,7 +200,7 @@ class FoodController extends Notifier<FoodState> {
   /// Removes one of [itemId], dropping the line at zero quantity.
   void removeItem(String itemId) {
     final order = state.order;
-    if (order == null) return;
+    if (order == null || !order.stage.isEditable) return;
 
     final lines = <CartLine>[];
     for (final line in order.lines) {
@@ -211,7 +226,7 @@ class FoodController extends Notifier<FoodState> {
   /// Empties the cart but keeps the restaurant selected.
   void clearCart() {
     final order = state.order;
-    if (order == null) return;
+    if (order == null || !order.stage.isEditable) return;
     state = FoodState(
       generation: state.generation,
       order: order.copyWith(
@@ -229,6 +244,12 @@ class FoodController extends Notifier<FoodState> {
       return const ValidationFailure(
         field: 'cart',
         message: 'Add at least one demo item before checking out.',
+      );
+    }
+    if (!order.stage.isEditable) {
+      return InvalidTransitionFailure(
+        from: order.stage.name,
+        to: FoodStage.checkout.name,
       );
     }
 
@@ -337,6 +358,8 @@ class FoodController extends Notifier<FoodState> {
     if (state.generation != generation) return;
     final order = state.order;
     if (order == null || order.stage != FoodStage.delivered) return;
+
+    ref.read(profileProvider.notifier).addPoints(AppInfo.demoPointsPerJourney);
 
     ref
         .read(activityProvider.notifier)

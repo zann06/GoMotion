@@ -260,6 +260,59 @@ void main() {
       expect(container.read(rideProvider).ride!.promoCode, isNull);
     });
 
+    test('keeps an eligible promo when the selected vehicle changes', () async {
+      final (container, _, bundle) = await _harness();
+      addTearDown(container.dispose);
+
+      final ride = container.read(rideProvider.notifier);
+      final (pickup, destination) = _endpoints(bundle);
+      ride.beginDraft(pickup: pickup, destination: destination);
+
+      final cheapest = bundle.vehicles.firstWhere((v) => v.id == 'veh_ride');
+      final premium = bundle.vehicles.firstWhere((v) => v.id == 'veh_premium');
+      ride.selectVehicle(cheapest);
+      expect(ride.applyPromoCode('MOVE10'), isNull);
+      expect(container.read(rideProvider).ride!.promoCode, 'MOVE10');
+
+      // Re-selecting a vehicle must not silently drop the applied discount.
+      ride.selectVehicle(premium);
+      expect(container.read(rideProvider).ride!.promoCode, 'MOVE10');
+      expect(container.read(rideProvider).ride!.fare!.discount, greaterThan(0));
+
+      // An explicit removal still clears it.
+      ride.clearPromo();
+      expect(container.read(rideProvider).ride!.promoCode, isNull);
+    });
+
+    test('rewards demo points once when a ride is paid', () async {
+      final (container, clock, bundle) = await _harness();
+      addTearDown(container.dispose);
+
+      final ride = container.read(rideProvider.notifier);
+      final (pickup, destination) = _endpoints(bundle);
+      ride.beginDraft(pickup: pickup, destination: destination);
+      ride.selectVehicle(bundle.vehicles.first);
+      ride.confirmBooking();
+      clock.advance(SimulationTiming.matching);
+      clock.advance(SimulationTiming.driverApproach);
+      ride.startTrip();
+      clock.advance(SimulationTiming.rideInProgress);
+
+      final pointsBefore = container.read(profileProvider).rewardPoints;
+      expect(ride.pay(PaymentMethod.cash), isNull);
+      expect(
+        container.read(profileProvider).rewardPoints,
+        pointsBefore + AppInfo.demoPointsPerJourney,
+      );
+
+      // A rejected retry must not grant points twice.
+      ride.pay(PaymentMethod.cash);
+      expect(
+        container.read(profileProvider).rewardPoints,
+        pointsBefore + AppInfo.demoPointsPerJourney,
+      );
+    });
+
     test('reset clears ride state and leaves no pending timers', () async {
       final (container, clock, bundle) = await _harness();
       addTearDown(container.dispose);

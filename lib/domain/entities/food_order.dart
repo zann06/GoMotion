@@ -26,6 +26,13 @@ enum FoodStage {
   /// Whether the courier simulation should still be ticking.
   bool get isLive =>
       this == matchingCourier || this == preparing || this == onTheWay;
+
+  /// Whether the cart contents may still be added to or changed.
+  ///
+  /// Once checkout is reached the order is locked: no further line edits, so a
+  /// delivered or in-flight order can never be re-checked-out or re-charged.
+  bool get isEditable =>
+      this == browsing || this == restaurantSelected || this == cartReady;
 }
 
 /// A single cart line.

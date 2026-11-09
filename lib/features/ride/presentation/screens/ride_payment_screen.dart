@@ -111,7 +111,11 @@ class _RidePaymentScreenState extends ConsumerState<RidePaymentScreen> {
     return AppPage(
       title: 'Pay for your demo ride',
       subtitle: 'Choose a fictional payment method',
-      leading: const AppBackButton(),
+      // Return to the dashboard rather than popping into a stale vehicle
+      // selection left behind by the push-replacement chain.
+      leading: AppBackButton(
+        onPressed: () => context.goNamed(AppRoutes.homeName),
+      ),
       footer: Column(
         mainAxisSize: MainAxisSize.min,
         children: [

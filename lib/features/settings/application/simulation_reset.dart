@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../app/providers/app_providers.dart';
+import '../../../app/providers/reduced_motion_provider.dart';
 import '../../activity/application/activity_controller.dart';
 import '../../food/application/food_controller.dart';
 import '../../profile/application/profile_controller.dart';
@@ -30,6 +31,9 @@ class SimulationReset {
     _ref.read(activityProvider.notifier).clear();
     _ref.read(rewardsProvider.notifier).reset();
     _ref.read(profileProvider.notifier).reset();
+
+    // Restore the in-app motion override too, so no setting survives a reset.
+    _ref.read(inAppReduceMotionProvider.notifier).set(false);
 
     await _ref.read(preferencesStoreProvider).clear();
   }

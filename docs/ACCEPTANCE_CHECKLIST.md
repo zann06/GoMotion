@@ -12,7 +12,7 @@
       (covered by dedicated strictness tests).
 - [x] Design tokens, light theme, and brand palette established.
 - [x] Deterministic simulation clock and seeded driver assigner.
-- [x] `dart format .`, `flutter analyze`, and `flutter test` pass (123 tests).
+- [x] `dart format .`, `flutter analyze`, and `flutter test` pass (135 tests).
 - [x] CI workflow runs format, analyze, and test on push and pull request.
 - [x] Release manifest declares no `INTERNET` or location permission; only the
       debug overlay adds `INTERNET`, for the Flutter hot-reload tooling
@@ -45,18 +45,26 @@
 - [x] First-launch onboarding, shown once and persisted locally.
 - [x] Every visible button has a working local action. Journey widget tests tap
       the real controls, and a grep finds no empty handlers.
+- [x] An in-progress ride, order, or parcel can be resumed from the dashboard;
+      the Ride/Food/Send shortcuts reopen its live screen rather than starting a
+      fresh draft.
+- [x] Completing a demo journey awards fictional reward points once, so the
+      rewards catalogue is reachable within a session.
 
 ## Simulation integrity
 - [x] State transitions validated in domain/application layers, not widgets.
 - [x] One active ride, food order, and parcel delivery at a time.
 - [x] Duplicate booking and duplicate payment are refused.
+- [x] GoFood cart edits and a second checkout are refused once the order leaves
+      the editable cart stages.
 - [x] Cancellation and reset invalidate generation tokens and pending timers.
 - [x] Deterministic driver selection verified
       (`test/simulation/simulation_test.dart`).
 
 ## Quality
 - [x] Reduced motion honoured by radar, skeletons, press scaling, and entrance
-      motion; also persisted across launches.
+      motion, with animated content staying visible; also persisted across
+      launches.
 - [x] Semantic labels on icon-only controls, live regions on async status, and
       48dp minimum touch targets.
 - [x] Status is never conveyed by colour alone; every pill carries a text label.

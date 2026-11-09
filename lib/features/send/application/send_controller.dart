@@ -277,6 +277,8 @@ class SendController extends Notifier<SendState> {
     final parcel = state.parcel;
     if (parcel == null || parcel.stage != SendStage.delivered) return;
 
+    ref.read(profileProvider.notifier).addPoints(AppInfo.demoPointsPerJourney);
+
     ref
         .read(activityProvider.notifier)
         .record(

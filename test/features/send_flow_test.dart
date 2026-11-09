@@ -73,6 +73,33 @@ void main() {
       expect(activity.single.status, ActivityStatus.completed);
     });
 
+    test('delivering a parcel rewards demo points exactly once', () async {
+      final (container, clock) = await _harness();
+      addTearDown(container.dispose);
+
+      final send = _completeDraft(container);
+      send.requestQuote();
+      send.confirm(paymentMethod: SendPayment.cash);
+
+      final pointsBefore = container.read(profileProvider).rewardPoints;
+      clock.advance(SimulationTiming.courierMatching);
+      clock.advance(SimulationTiming.preparing);
+      clock.advance(SimulationTiming.inTransit);
+      clock.advance(SimulationTiming.inTransit);
+      expect(container.read(sendProvider).stage, SendStage.delivered);
+      expect(
+        container.read(profileProvider).rewardPoints,
+        pointsBefore + AppInfo.demoPointsPerJourney,
+      );
+
+      // Later ticks must not award the same journey twice.
+      clock.advance(const Duration(minutes: 5));
+      expect(
+        container.read(profileProvider).rewardPoints,
+        pointsBefore + AppInfo.demoPointsPerJourney,
+      );
+    });
+
     test('quote is refused until every required field is present', () async {
       final (container, _) = await _harness();
       addTearDown(container.dispose);
