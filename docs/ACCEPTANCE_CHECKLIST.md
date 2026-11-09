@@ -63,8 +63,10 @@
 - [x] No layout overflow at 1.0x and 1.3x text scale across all primary routes
       (`test/app/accessibility_test.dart`).
 - [x] `dart format .`, `flutter analyze`, and `flutter test` pass.
-- [x] Android debug and release builds succeed locally; the release APK is
-      debug-signed (not suitable for store distribution).
+- [x] Android debug and release builds succeed locally, with an adaptive
+      launcher icon (foreground/background/monochrome) and a round-icon
+      variant. Release signing reads `android/key.properties` and falls back to
+      the debug keystore when it is absent (see the release note below).
 - [ ] iOS release build — **not verified here**: requires macOS and Xcode, and
       this environment is Windows. Run `flutter build ipa --release` on a
       macOS/CI runner before shipping iOS.
@@ -73,5 +75,7 @@
 ## Release notes
 - Version `0.1.0+1`, an original fictional simulation. It is not a real
   transportation, delivery, or payment service.
-- The Android release APK is debug-signed; sign with a real keystore before
-  distribution on any store.
+- To sign a store build, copy `android/key.properties.example` to
+  `android/key.properties`, create a keystore, and fill in the values. Until
+  then the release build falls back to the debug keystore and must not be
+  distributed.

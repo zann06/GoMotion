@@ -94,6 +94,12 @@ end without a network connection.
 ### Added — Phase 10 (production builds and documentation)
 - Release build verification for Android, including a manifest check that the
   release package declares no `INTERNET` or location permission.
+- Original launcher icon (indigo→blue gradient with the brand ring-chevron
+  mark) across all Android densities and iOS icon slots, plus an adaptive icon
+  (foreground, gradient background, and monochrome layer) and a round variant.
+- `key.properties`-driven release signing with a documented example and a debug
+  fallback, so signed store builds are a configuration step rather than a code
+  change.
 - Updated README, acceptance checklist, and this changelog.
 
 ### Verification

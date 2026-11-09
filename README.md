@@ -50,11 +50,17 @@ Current status: **123 tests passing, `flutter analyze` clean.**
 ## Build
 - Android debug: `flutter build apk --debug`
 - Android release: `flutter build apk --release`
+- Android App Bundle (Play): `flutter build appbundle --release`
 - iOS release (macOS): `flutter build ipa --release`
 
-The Android release APK produced by this repository is debug-signed. Sign with
-your own keystore before distributing it. The iOS build is not verified in this
-Windows environment; run it on macOS or CI before shipping.
+Release signing is read from `android/key.properties`, which is git-ignored.
+Copy `android/key.properties.example`, create a keystore, and fill in the values
+before building for distribution. When the file is absent the release build
+falls back to the debug keystore, so the command still runs for local testing —
+never distribute an APK or bundle signed that way.
+
+The iOS build is not verified in this Windows environment; run it on macOS or CI
+before shipping.
 
 ## Project structure
 ```
@@ -79,6 +85,7 @@ See `docs/` for product, design, architecture, data, simulation, privacy, testin
 - Fictional simulation only: no real drivers, restaurants, parcels, or payments.
 - Activity and wallets are held in memory for the session; only simple preferences persist.
 - iOS release build is unverified in this environment (no macOS/Xcode).
+- Release output uses the debug keystore until `android/key.properties` is provided.
 
 ## License
 MIT. See [LICENSE](LICENSE).

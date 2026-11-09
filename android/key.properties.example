@@ -1,0 +1,16 @@
+# Copy this file to `key.properties` (same folder) and fill in your own values,
+# then run `flutter build appbundle --release` or `flutter build apk --release`.
+#
+# `key.properties` and any `*.jks` / `*.keystore` files are git-ignored, so your
+# signing secrets are never committed. When `key.properties` is missing the
+# release build falls back to the debug keystore for local testing only.
+#
+# Create a keystore (once) with:
+#   keytool -genkey -v -keystore upload-keystore.jks -storetype JKS \
+#     -keyalg RSA -keysize 2048 -validity 10000 -alias upload
+#
+# storeFile may be absolute, or relative to the android/app directory.
+storePassword=CHANGE_ME
+keyPassword=CHANGE_ME
+keyAlias=upload
+storeFile=../upload-keystore.jks
