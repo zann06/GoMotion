@@ -1,0 +1,29 @@
+[
+  {
+    "id": "rest_nori",
+    "name": "Nori House",
+    "category": "Japanese",
+    "rating": 4.8,
+    "eta_label": "20–30 min",
+    "image_asset": "nori_house.png",
+    "featured": true
+  },
+  {
+    "id": "rest_bowl",
+    "name": "Daily Bowl",
+    "category": "Healthy",
+    "rating": 4.7,
+    "eta_label": "15–25 min",
+    "image_asset": "daily_bowl.png",
+    "featured": true
+  },
+  {
+    "id": "rest_pasta",
+    "name": "Pasta Corner",
+    "category": "Italian",
+    "rating": 4.6,
+    "eta_label": "25–35 min",
+    "image_asset": "pasta_corner.png",
+    "featured": false
+  }
+]

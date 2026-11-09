@@ -1,0 +1,40 @@
+GoMotion/
+├── android/                         # Android host project, Gradle, manifests
+├── ios/                             # iOS host project, Xcode project and plist
+├── assets/
+│   ├── images/                      # Bundled illustrations and local avatars
+│   ├── icons/                       # Original SVG/PNG icon assets
+│   ├── animations/                  # Bundled Lottie/Rive assets, if approved
+│   ├── fonts/                       # Licensed local font files
+│   └── data/                        # locations, drivers, vehicles, promos, food, rewards, demo user
+├── design/references/               # Individual PNG screen references and brand board
+├── docs/                            # Product/design/architecture/QA specifications
+├── prompts/                         # Coding-agent implementation prompts
+├── lib/
+│   ├── app/                         # App bootstrap, theme, router, providers
+│   ├── core/
+│   │   ├── constants/               # Tokens and app-wide constants
+│   │   ├── errors/                  # Typed failures and error mapping
+│   │   ├── extensions/              # Small reusable Dart extensions
+│   │   ├── navigation/               # Route names and route helpers
+│   │   ├── widgets/                  # Shared buttons, cards, sheets, status labels
+│   │   └── utils/                    # Formatting, validators, accessibility helpers
+│   ├── data/                        # Shared fixture loading and local adapters
+│   ├── domain/                      # Shared value objects and contracts
+│   ├── simulation/                  # Clock, scheduler, seeded assignment, lifecycle guards
+│   └── features/
+│       ├── home/                    # Home dashboard and local destination discovery
+│       ├── ride/                    # Ride selection, booking, matching, tracking, payment
+│       ├── food/                    # Restaurants, menu, cart, checkout, tracking
+│       ├── send/                    # Parcel quote, courier, tracking, receipt
+│       ├── activity/                # Unified history and detail views
+│       ├── profile/                 # Demo profile, settings, reset
+│       └── rewards/                 # Points and local reward unlocks
+├── test/                            # Unit and widget tests by feature
+├── integration_test/                # End-to-end local journeys
+├── .github/workflows/               # CI
+├── AGENTS.md
+├── README.md
+├── CONTRIBUTING.md
+├── LICENSE
+└── pubspec.yaml

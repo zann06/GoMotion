@@ -1,0 +1,23 @@
+[
+  {
+    "id": "rew_001",
+    "title": "First Journey",
+    "points_cost": 0,
+    "description": "Welcome reward for exploring the demo",
+    "unlocked": true
+  },
+  {
+    "id": "rew_002",
+    "title": "Indigo Explorer",
+    "points_cost": 100,
+    "description": "A fictional badge for demo milestones",
+    "unlocked": false
+  },
+  {
+    "id": "rew_003",
+    "title": "Motion Master",
+    "points_cost": 250,
+    "description": "Complete simulated journeys to unlock",
+    "unlocked": false
+  }
+]

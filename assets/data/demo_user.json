@@ -1,0 +1,12 @@
+{
+  "id": "user_demo",
+  "display_name": "Alex Morgan",
+  "avatar_asset": "avatar_demo.png",
+  "demo_wallet_balance": 250000,
+  "reward_points": 120,
+  "favorite_location_ids": [
+    "loc_home",
+    "loc_campus"
+  ],
+  "is_demo": true
+}

@@ -1,0 +1,33 @@
+{
+  "package": "GoMotion_Production_Package",
+  "version": "0.1.0-handover",
+  "generated": "2026-11-09",
+  "status": "Product/design/engineering specification package; Flutter application source is not included.",
+  "png_references": [
+    "activity-screen.png",
+    "destination-search.png",
+    "driver-matching.png",
+    "driver-tracking.png",
+    "gofood-screen.png",
+    "gomotion-app-icon.png",
+    "gomotion-brand-board.png",
+    "gomotion-logo.png",
+    "gomotion-product-showcase.png",
+    "gosend-screen.png",
+    "home-screen.png",
+    "payment-success.png",
+    "profile-screen.png",
+    "vehicle-selection.png"
+  ],
+  "json_fixtures": [
+    "delivery_options.json",
+    "demo_user.json",
+    "drivers.json",
+    "locations.json",
+    "menu_items.json",
+    "promos.json",
+    "restaurants.json",
+    "rewards.json",
+    "vehicles.json"
+  ]
+}

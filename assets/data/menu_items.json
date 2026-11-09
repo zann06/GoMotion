@@ -1,0 +1,38 @@
+[
+  {
+    "id": "menu_001",
+    "restaurant_id": "rest_nori",
+    "name": "Salmon Rice Bowl",
+    "description": "Rice bowl with a savory demo topping",
+    "price": 42000,
+    "image_asset": "salmon_bowl.png",
+    "available": true
+  },
+  {
+    "id": "menu_002",
+    "restaurant_id": "rest_nori",
+    "name": "Chicken Katsu Set",
+    "description": "Crispy chicken with rice",
+    "price": 36000,
+    "image_asset": "katsu_set.png",
+    "available": true
+  },
+  {
+    "id": "menu_003",
+    "restaurant_id": "rest_bowl",
+    "name": "Avocado Garden Bowl",
+    "description": "Fresh greens and grains",
+    "price": 39000,
+    "image_asset": "garden_bowl.png",
+    "available": true
+  },
+  {
+    "id": "menu_004",
+    "restaurant_id": "rest_pasta",
+    "name": "Creamy Mushroom Pasta",
+    "description": "Cream sauce with mushrooms",
+    "price": 44000,
+    "image_asset": "mushroom_pasta.png",
+    "available": true
+  }
+]
