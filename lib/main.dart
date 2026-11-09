@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'app/app.dart';
 import 'app/providers/app_providers.dart';
 import 'app/providers/reduced_motion_provider.dart';
+import 'core/navigation/app_routes.dart';
 import 'data/preferences/preferences_store.dart';
 
 /// Bootstraps GoMotion.
@@ -33,7 +34,15 @@ Future<void> main() async {
   }
 
   runApp(
-    UncontrolledProviderScope(container: container, child: const GoMotionApp()),
+    UncontrolledProviderScope(
+      container: container,
+      child: GoMotionApp(
+        // First launch opens the welcome screen; afterwards go straight home.
+        initialLocation: preferences.hasSeenOnboarding
+            ? null
+            : AppRoutes.onboarding,
+      ),
+    ),
   );
 }
 

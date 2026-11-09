@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/constants/app_spacing.dart';
+import 'app_providers.dart';
 
 /// Whether the user has disabled animations at the OS level.
 @immutable
@@ -52,9 +53,20 @@ final class InAppReduceMotion extends Notifier<bool> {
   void set(bool value) {
     if (state == value) return;
     state = value;
+    _persist(value);
   }
 
-  void toggle() => state = !state;
+  void toggle() => set(!state);
+
+  /// Writes the preference locally. Failures are ignored because the setting is
+  /// a convenience, never a correctness requirement.
+  Future<void> _persist(bool value) async {
+    try {
+      await ref.read(preferencesStoreProvider).setReduceMotionOverride(value);
+    } on Object catch (error) {
+      debugPrint('Could not persist the motion preference: $error');
+    }
+  }
 }
 
 /// Resolves the effective motion preference for the whole app.

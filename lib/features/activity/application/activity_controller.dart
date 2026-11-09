@@ -71,3 +71,15 @@ final activityFilterProvider =
           if (r.kind == kind) r,
       ];
     });
+
+/// Provides one activity record by journey id, or null when unknown.
+final activityRecordProvider = Provider.family<ActivityRecord?, String>((
+  ref,
+  journeyId,
+) {
+  final all = ref.watch(activityProvider);
+  for (final record in all) {
+    if (record.journeyId == journeyId) return record;
+  }
+  return null;
+});

@@ -258,21 +258,11 @@ class _VehicleCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                  children: [
-                    Flexible(
-                      child: Text(
-                        vehicle.label,
-                        style: AppTypography.itemTitle,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                    if (selected) ...[
-                      const SizedBox(width: AppSpacing.xs),
-                      const StatusPill(label: 'Selected'),
-                    ],
-                  ],
+                Text(
+                  vehicle.label,
+                  style: AppTypography.itemTitle,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
                 const SizedBox(height: 2),
                 Text(
@@ -281,6 +271,10 @@ class _VehicleCard extends StatelessWidget {
                   '${vehicle.estimatedMinutes} min away',
                   style: AppTypography.caption,
                 ),
+                if (selected) ...[
+                  const SizedBox(height: AppSpacing.xxs),
+                  const StatusPill(label: 'Selected'),
+                ],
               ],
             ),
           ),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../core/navigation/app_routes.dart';
+import '../../features/activity/presentation/screens/activity_detail_screen.dart';
 import '../../features/activity/presentation/screens/activity_screen.dart';
 import '../../features/destination/presentation/screens/destination_search_screen.dart';
 import '../../features/food/presentation/screens/food_browse_screen.dart';
@@ -11,7 +12,9 @@ import '../../features/food/presentation/screens/food_receipt_screen.dart';
 import '../../features/food/presentation/screens/food_restaurant_screen.dart';
 import '../../features/food/presentation/screens/food_tracking_screen.dart';
 import '../../features/home/presentation/screens/home_screen.dart';
+import '../../features/onboarding/presentation/screens/onboarding_screen.dart';
 import '../../features/profile/presentation/screens/profile_screen.dart';
+import '../../features/profile/presentation/screens/saved_places_screen.dart';
 import '../../features/rewards/presentation/screens/rewards_screen.dart';
 import '../../features/ride/presentation/screens/ride_matching_screen.dart';
 import '../../features/ride/presentation/screens/ride_payment_screen.dart';
@@ -23,6 +26,8 @@ import '../../features/send/presentation/screens/send_receipt_screen.dart';
 import '../../features/send/presentation/screens/send_review_screen.dart';
 import '../../features/send/presentation/screens/send_screen.dart';
 import '../../features/send/presentation/screens/send_tracking_screen.dart';
+import '../../features/settings/presentation/screens/about_screen.dart';
+import '../../features/settings/presentation/screens/settings_screen.dart';
 import '../router/app_shell.dart';
 
 /// Builds the GoMotion [GoRouter] configuration.
@@ -63,6 +68,16 @@ GoRouter buildRouter({
                 path: AppRoutes.activity,
                 name: AppRoutes.activityName,
                 builder: (context, state) => const ActivityScreen(),
+                routes: [
+                  // Nested so the detail keeps the tab bar and its own stack.
+                  GoRoute(
+                    path: ':activityId',
+                    name: AppRoutes.activityDetailName,
+                    builder: (context, state) => ActivityDetailScreen(
+                      activityId: state.pathParameters['activityId'] ?? '',
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
@@ -183,6 +198,27 @@ GoRouter buildRouter({
         path: AppRoutes.sendReceipt,
         name: AppRoutes.sendReceiptName,
         builder: (context, state) => const SendReceiptScreen(),
+      ),
+      // Profile, rewards, and settings surfaces.
+      GoRoute(
+        path: AppRoutes.savedPlaces,
+        name: AppRoutes.savedPlacesName,
+        builder: (context, state) => const SavedPlacesScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.settings,
+        name: AppRoutes.settingsName,
+        builder: (context, state) => const SettingsScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.about,
+        name: AppRoutes.aboutName,
+        builder: (context, state) => const AboutScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.onboarding,
+        name: AppRoutes.onboardingName,
+        builder: (context, state) => const OnboardingScreen(),
       ),
     ],
     errorBuilder: (context, state) =>

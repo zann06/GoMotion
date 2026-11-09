@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:gomotion/app/app.dart';
 import 'package:gomotion/app/providers/app_providers.dart';
+import 'package:gomotion/core/navigation/app_routes.dart';
 import 'package:gomotion/core/widgets/app_bottom_nav.dart';
 import 'package:gomotion/data/preferences/preferences_store.dart';
 import 'package:gomotion/simulation/fake_simulation_clock.dart';
@@ -81,5 +82,35 @@ void main() {
     expect(find.text('Ride'), findsOneWidget);
     expect(find.text('Food'), findsOneWidget);
     expect(find.text('Send'), findsOneWidget);
+  });
+
+  testWidgets('first launch welcomes the user and continues to home', (
+    tester,
+  ) async {
+    await tester.binding.setSurfaceSize(const Size(390, 844));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+
+    final preferences = InMemoryPreferencesStore();
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          preferencesStoreProvider.overrideWithValue(preferences),
+          simulationClockProvider.overrideWithValue(FakeSimulationClock()),
+        ],
+        child: const GoMotionApp(initialLocation: AppRoutes.onboarding),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Explore the demo'), findsOneWidget);
+    expect(find.text('Works fully offline'), findsOneWidget);
+    expect(preferences.hasSeenOnboarding, isFalse);
+
+    await tester.tap(find.text('Explore the demo'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Your next journey'), findsOneWidget);
+    expect(preferences.hasSeenOnboarding, isTrue);
+    expect(find.text('Explore the demo'), findsNothing);
   });
 }

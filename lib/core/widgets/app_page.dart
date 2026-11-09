@@ -166,6 +166,10 @@ class _StickyFooter extends StatelessWidget {
         top: false,
         bottom: safeBottom,
         child: Center(
+          // `heightFactor: 1` keeps the footer sized to its content. Without
+          // it, Center expands to the full height offered by the Scaffold's
+          // bottomNavigationBar slot and collapses the page body to zero.
+          heightFactor: 1,
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: kMaxContentWidth),
             child: Padding(

@@ -5,6 +5,7 @@ import '../../app/providers/reduced_motion_provider.dart';
 import '../constants/app_colors.dart';
 import '../constants/app_spacing.dart';
 import '../constants/app_typography.dart';
+import '../feedback/app_haptics.dart';
 
 /// A primary navigation destination in the app shell.
 @immutable
@@ -68,8 +69,8 @@ class AppBottomNav extends StatelessWidget {
       ),
       child: SafeArea(
         top: false,
-        child: SizedBox(
-          height: 62,
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(minHeight: 62),
           child: Row(
             children: [
               for (final (index, destination) in destinations.indexed)
@@ -124,6 +125,7 @@ class _NavItemState extends ConsumerState<_NavItem> {
         onTapCancel: () => setState(() => _pressed = false),
         onTapUp: (_) {
           setState(() => _pressed = false);
+          AppHaptics.select();
           widget.onTap();
         },
         child: AnimatedScale(

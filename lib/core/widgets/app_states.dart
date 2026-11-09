@@ -17,7 +17,12 @@ class AppSkeletonList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Shrink-wrapped and non-scrollable so the skeleton can be embedded inside
+    // a page that already scrolls (search results, detail bodies) without
+    // triggering an unbounded-viewport failure.
     return ListView.separated(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
       padding: const EdgeInsets.symmetric(
         horizontal: AppSpacing.pageGutter,
         vertical: AppSpacing.md,

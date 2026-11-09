@@ -5,6 +5,7 @@ import '../../app/providers/reduced_motion_provider.dart';
 import '../constants/app_colors.dart';
 import '../constants/app_spacing.dart';
 import '../constants/app_typography.dart';
+import '../feedback/app_haptics.dart';
 
 /// The primary call to action: a restrained indigo→blue→violet gradient.
 ///
@@ -71,6 +72,7 @@ class _PrimaryButtonState extends ConsumerState<PrimaryButton> {
             onTapUp: _enabled
                 ? (_) {
                     setState(() => _pressed = false);
+                    AppHaptics.confirm();
                     widget.onPressed?.call();
                   }
                 : null,

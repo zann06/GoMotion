@@ -48,14 +48,24 @@ class AppCard extends StatelessWidget {
     final content = AnimatedContainer(
       duration: AppDuration.value,
       curve: Curves.easeOut,
-      padding: padding,
       decoration: BoxDecoration(
         color: background,
         borderRadius: radius,
         border: Border.all(color: effectiveBorder, width: selected ? 1.8 : 1),
         boxShadow: selected ? null : AppShadows.card,
       ),
-      child: child,
+      // A transparent Material gives descendants such as ListTile and InkWell
+      // a surface for ink effects on top of the decorated card.
+      child: Material(
+        type: MaterialType.transparency,
+        child: onTap == null
+            ? Padding(padding: padding, child: child)
+            : InkWell(
+                borderRadius: radius,
+                onTap: onTap,
+                child: Padding(padding: padding, child: child),
+              ),
+      ),
     );
 
     if (onTap == null) {
@@ -68,11 +78,7 @@ class AppCard extends StatelessWidget {
       selected: selected,
       container: true,
       excludeSemantics: semanticLabel != null,
-      child: Material(
-        color: Colors.transparent,
-        borderRadius: radius,
-        child: InkWell(borderRadius: radius, onTap: onTap, child: content),
-      ),
+      child: content,
     );
   }
 }
