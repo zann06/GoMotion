@@ -12,7 +12,7 @@
       (covered by dedicated strictness tests).
 - [x] Design tokens, light theme, and brand palette established.
 - [x] Deterministic simulation clock and seeded driver assigner.
-- [x] `dart format .`, `flutter analyze`, and `flutter test` pass (135 tests).
+- [x] `dart format .`, `flutter analyze`, and `flutter test` pass (136 tests).
 - [x] CI workflow runs format, analyze, and test on push and pull request.
 - [x] Release manifest declares no `INTERNET` or location permission; only the
       debug overlay adds `INTERNET`, for the Flutter hot-reload tooling
@@ -24,6 +24,8 @@
       detail only.
 - [x] Screens follow the shared page scaffold, safe-area rules, and sticky
       primary actions.
+- [x] The persistent bottom navigation stays pinned to the bottom at its
+      intended height, leaving every tab's page body visible.
 - [x] Demo/fictional labels are visible wherever money, people, or services are
       shown, including fares, wallet, drivers, restaurants, parcels, and receipts.
 

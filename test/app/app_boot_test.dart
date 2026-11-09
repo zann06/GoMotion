@@ -42,6 +42,34 @@ void main() {
     expect(find.byType(AppBottomNav), findsOneWidget);
   });
 
+  // Regression: the Scaffold lays the bottom bar out with loose full-height
+  // constraints. A flex child defaulting to `MainAxisSize.max` made the nav
+  // grow to the full viewport and collapse every page body to zero height, so
+  // the dashboard rendered blank with only the bar (vertically centred).
+  testWidgets(
+    'the bottom navigation stays compact and leaves room for the body',
+    (tester) async {
+      await pumpApp(tester);
+
+      final nav = tester.getRect(find.byType(AppBottomNav));
+      expect(nav.height, lessThan(120), reason: 'nav must size to its content');
+      // Pinned to the bottom, not centred in the viewport.
+      expect(nav.top, greaterThan(600));
+
+      final greeting = tester.getRect(find.textContaining('Good').first);
+      expect(greeting.top, greaterThanOrEqualTo(0));
+      expect(
+        greeting.top,
+        lessThan(nav.top),
+        reason: 'body must render above nav',
+      );
+
+      final card = tester.getRect(find.text('Your next journey'));
+      expect(card.height, greaterThan(0));
+      expect(card.top, lessThan(nav.top));
+    },
+  );
+
   testWidgets('home shows the destination entry point', (tester) async {
     await pumpApp(tester);
 

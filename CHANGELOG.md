@@ -8,6 +8,11 @@ Polish pass fixing remaining bugs and gaps found while auditing the demo, with
 no changes to the offline architecture or the brand.
 
 ### Fixed
+- The whole app body rendered blank behind a vertically centred bottom bar.
+  `Scaffold` lays its bottom bar out with loose full-height constraints, and the
+  nav item's `Column` defaulted to `MainAxisSize.max`, so the bar grew to the
+  full viewport and collapsed every page body to zero height. The bar now sizes
+  to its content, so all four tabs render their content above a pinned bar.
 - Home journey card no longer disappears under reduced motion. It previously
   parked its entrance controller at the invisible first frame; the entrance
   animation is now skipped entirely when motion is reduced.
@@ -38,9 +43,10 @@ no changes to the offline architecture or the brand.
   reduced-motion override.
 
 ### Verification
-- `dart format .` clean, `flutter analyze` clean, `flutter test` passes 135
+- `dart format .` clean, `flutter analyze` clean, `flutter test` passes 136
   tests (was 123), adding coverage for points, cart locking, promo retention,
-  reduced-motion home visibility, active-journey resume, and motion reset.
+  reduced-motion home visibility, active-journey resume, motion reset, and the
+  shell layout (the bottom bar must stay compact and leave the body visible).
 
 ## [0.1.0] - 2026-11-09
 

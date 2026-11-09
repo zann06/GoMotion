@@ -132,6 +132,11 @@ class _NavItemState extends ConsumerState<_NavItem> {
           scale: _pressed ? 0.94 : 1,
           duration: motion.resolve(AppDuration.press),
           child: Column(
+            // The Scaffold lays the bottom bar out with loose full-height
+            // constraints, so a flex child that defaults to `MainAxisSize.max`
+            // grows to fill the screen and collapses the page body to zero.
+            // Sizing to content keeps the bar at its intended height.
+            mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(
