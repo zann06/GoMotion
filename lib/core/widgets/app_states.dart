@@ -156,6 +156,79 @@ class AppEmptyState extends StatelessWidget {
   }
 }
 
+/// An inline informational banner.
+///
+/// Used for recoverable guidance ("choose a destination first") and for demo
+/// honesty notices. The [tone] changes the accent and icon, and the message is
+/// always plain text, so meaning never depends on colour alone.
+class AppNotice extends StatelessWidget {
+  const AppNotice({
+    required this.message,
+    this.tone = NoticeTone.info,
+    this.icon,
+    super.key,
+  });
+
+  final String message;
+  final NoticeTone tone;
+  final IconData? icon;
+
+  @override
+  Widget build(BuildContext context) {
+    final (background, foreground, defaultIcon) = switch (tone) {
+      NoticeTone.info => (
+        AppColors.blueTint,
+        AppColors.electricBlue,
+        Icons.info_outline_rounded,
+      ),
+      NoticeTone.warning => (
+        AppColors.warningTint,
+        AppColors.warning,
+        Icons.warning_amber_rounded,
+      ),
+      NoticeTone.error => (
+        AppColors.errorTint,
+        AppColors.error,
+        Icons.error_outline_rounded,
+      ),
+      NoticeTone.success => (
+        AppColors.successTint,
+        AppColors.success,
+        Icons.check_circle_outline_rounded,
+      ),
+    };
+
+    return Semantics(
+      liveRegion: true,
+      child: Container(
+        padding: const EdgeInsets.all(AppSpacing.sm),
+        decoration: BoxDecoration(
+          color: background,
+          borderRadius: AppRadius.button,
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Icon(icon ?? defaultIcon, size: 18, color: foreground),
+            const SizedBox(width: AppSpacing.xs),
+            Expanded(
+              child: Text(
+                message,
+                style: AppTypography.bodyMuted.copyWith(
+                  color: AppColors.deepNavy,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Semantic tone for [AppNotice].
+enum NoticeTone { info, warning, error, success }
+
 /// A recoverable error state.
 ///
 /// Never displays stack traces or asset paths; the technical cause stays in

@@ -53,6 +53,9 @@ abstract final class AppRoutes {
   static const String foodCart = '/food/cart';
   static const String foodCartName = 'foodCart';
 
+  static const String foodCheckout = '/food/checkout';
+  static const String foodCheckoutName = 'foodCheckout';
+
   static const String foodTracking = '/food/tracking';
   static const String foodTrackingName = 'foodTracking';
 

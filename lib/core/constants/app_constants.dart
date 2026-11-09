@@ -12,6 +12,12 @@ abstract final class AppInfo {
   static const String offlineNotice =
       'Demo simulation — works fully offline. No network, maps, GPS, or '
       'payments are used.';
+
+  /// Seed for deterministic driver and courier assignment.
+  ///
+  /// Tests override the assigned seed through the fixture repository's ride id,
+  /// so this stays a single stable constant in production.
+  static const int simulationSeed = SimulationTiming.defaultSeed;
 }
 
 /// Reusable honesty labels required by `docs/SECURITY_AND_PRIVACY.md`.

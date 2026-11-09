@@ -3,9 +3,26 @@ import 'package:go_router/go_router.dart';
 
 import '../../core/navigation/app_routes.dart';
 import '../../features/activity/presentation/screens/activity_screen.dart';
+import '../../features/destination/presentation/screens/destination_search_screen.dart';
+import '../../features/food/presentation/screens/food_browse_screen.dart';
+import '../../features/food/presentation/screens/food_cart_screen.dart';
+import '../../features/food/presentation/screens/food_checkout_screen.dart';
+import '../../features/food/presentation/screens/food_receipt_screen.dart';
+import '../../features/food/presentation/screens/food_restaurant_screen.dart';
+import '../../features/food/presentation/screens/food_tracking_screen.dart';
 import '../../features/home/presentation/screens/home_screen.dart';
 import '../../features/profile/presentation/screens/profile_screen.dart';
 import '../../features/rewards/presentation/screens/rewards_screen.dart';
+import '../../features/ride/presentation/screens/ride_matching_screen.dart';
+import '../../features/ride/presentation/screens/ride_payment_screen.dart';
+import '../../features/ride/presentation/screens/ride_receipt_screen.dart';
+import '../../features/ride/presentation/screens/ride_review_screen.dart';
+import '../../features/ride/presentation/screens/ride_tracking_screen.dart';
+import '../../features/ride/presentation/screens/vehicle_selection_screen.dart';
+import '../../features/send/presentation/screens/send_receipt_screen.dart';
+import '../../features/send/presentation/screens/send_review_screen.dart';
+import '../../features/send/presentation/screens/send_screen.dart';
+import '../../features/send/presentation/screens/send_tracking_screen.dart';
 import '../router/app_shell.dart';
 
 /// Builds the GoMotion [GoRouter] configuration.
@@ -70,6 +87,102 @@ GoRouter buildRouter({
             ],
           ),
         ],
+      ),
+      // Full-screen flows live outside the shell so their own headers and
+      // sticky footers own the layout.
+      GoRoute(
+        path: AppRoutes.destinationSearch,
+        name: AppRoutes.destinationSearchName,
+        builder: (context, state) {
+          final mode = state.uri.queryParameters['mode'] == 'pickup'
+              ? DestinationMode.pickup
+              : DestinationMode.destination;
+          return DestinationSearchScreen(mode: mode);
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.vehicleSelection,
+        name: AppRoutes.vehicleSelectionName,
+        builder: (context, state) => const VehicleSelectionScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.rideReview,
+        name: AppRoutes.rideReviewName,
+        builder: (context, state) => const RideReviewScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.rideMatching,
+        name: AppRoutes.rideMatchingName,
+        builder: (context, state) => const RideMatchingScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.rideTracking,
+        name: AppRoutes.rideTrackingName,
+        builder: (context, state) => const RideTrackingScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.ridePayment,
+        name: AppRoutes.ridePaymentName,
+        builder: (context, state) => const RidePaymentScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.rideReceipt,
+        name: AppRoutes.rideReceiptName,
+        builder: (context, state) => const RideReceiptScreen(),
+      ),
+      // GoFood
+      GoRoute(
+        path: AppRoutes.food,
+        name: AppRoutes.foodName,
+        builder: (context, state) => const FoodBrowseScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.foodRestaurant,
+        name: AppRoutes.foodRestaurantName,
+        builder: (context, state) => FoodRestaurantScreen(
+          restaurantId: state.pathParameters['restaurantId'] ?? '',
+        ),
+      ),
+      GoRoute(
+        path: AppRoutes.foodCart,
+        name: AppRoutes.foodCartName,
+        builder: (context, state) => const FoodCartScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.foodCheckout,
+        name: AppRoutes.foodCheckoutName,
+        builder: (context, state) => const FoodCheckoutScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.foodTracking,
+        name: AppRoutes.foodTrackingName,
+        builder: (context, state) => const FoodTrackingScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.foodReceipt,
+        name: AppRoutes.foodReceiptName,
+        builder: (context, state) => const FoodReceiptScreen(),
+      ),
+      // GoSend
+      GoRoute(
+        path: AppRoutes.send,
+        name: AppRoutes.sendName,
+        builder: (context, state) => const SendScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.sendReview,
+        name: AppRoutes.sendReviewName,
+        builder: (context, state) => const SendReviewScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.sendTracking,
+        name: AppRoutes.sendTrackingName,
+        builder: (context, state) => const SendTrackingScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.sendReceipt,
+        name: AppRoutes.sendReceiptName,
+        builder: (context, state) => const SendReceiptScreen(),
       ),
     ],
     errorBuilder: (context, state) =>

@@ -1,49 +1,7 @@
 import 'dart:math' as math;
 
-import 'package:flutter/foundation.dart';
-
 import '../entities/fixtures.dart';
-
-/// A computed fare breakdown for a simulated ride.
-@immutable
-class FareBreakdown {
-  const FareBreakdown({
-    required this.baseFare,
-    required this.distanceFare,
-    required this.distanceKm,
-    required this.discount,
-    required this.promoCode,
-  });
-
-  final int baseFare;
-  final int distanceFare;
-  final double distanceKm;
-  final int discount;
-  final String? promoCode;
-
-  /// Fare before any promo discount.
-  int get subtotal => baseFare + distanceFare;
-
-  /// Fare after discount, never negative.
-  int get total => (subtotal - discount).clamp(0, subtotal);
-
-  @override
-  bool operator ==(Object other) =>
-      other is FareBreakdown &&
-      other.baseFare == baseFare &&
-      other.distanceFare == distanceFare &&
-      other.distanceKm == distanceKm &&
-      other.discount == discount &&
-      other.promoCode == promoCode;
-
-  @override
-  int get hashCode =>
-      Object.hash(baseFare, distanceFare, distanceKm, discount, promoCode);
-
-  @override
-  String toString() =>
-      'FareBreakdown(total: $total, discount: $discount, promo: $promoCode)';
-}
+import '../entities/ride.dart';
 
 /// The ride fare engine.
 ///
@@ -75,7 +33,7 @@ abstract final class FareEngine {
   /// When [promo] is supplied and eligible, its discount is applied. An
   /// ineligible promo contributes no discount rather than throwing, because the
   /// review screen shows drafts optimistically.
-  static FareBreakdown quote({
+  static FareQuote quote({
     required Vehicle vehicle,
     required double distanceKm,
     Promo? promo,
@@ -83,7 +41,7 @@ abstract final class FareEngine {
     final distanceFare = (vehicle.perKmFare * distanceKm).round();
     final subtotal = vehicle.baseFare + distanceFare;
     final discount = promo == null ? 0 : promo.discountFor(subtotal);
-    return FareBreakdown(
+    return FareQuote(
       baseFare: vehicle.baseFare,
       distanceFare: distanceFare,
       distanceKm: distanceKm,
