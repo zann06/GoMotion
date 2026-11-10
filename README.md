@@ -4,7 +4,7 @@
 
 [![Platform](https://img.shields.io/badge/platform-android%20%7C%20ios%20%7C%20web-2563EB?style=flat-square)](https://flutter.dev)
 [![Runtime](https://img.shields.io/badge/runtime-100%25%20offline-16A34A?style=flat-square)](#offline-guarantees)
-[![Tests](https://img.shields.io/badge/tests-179%20passing-16A34A?style=flat-square)](#quality-gates)
+[![Tests](https://img.shields.io/badge/tests-185%20passing-16A34A?style=flat-square)](#quality-gates)
 [![License](https://img.shields.io/badge/license-MIT-0E2A6E?style=flat-square)](LICENSE)
 
 GoMotion is an offline-first, fictional ride-hailing experience simulator for
@@ -70,8 +70,8 @@ Nothing is billed, booked, or sent anywhere.
 The identity is drawn, not bundled: no image asset, no icon font, no copied
 operator artwork.
 
-- **The mark** ([`lib/core/widgets/app_logo.dart`](lib/core/widgets/app_logo.dart)) is a tapered motion arc with a forward chevron and a tip dot, stroked as one rounded path so the same geometry stays crisp from a 20px row to the 132px splash signature. `AppBrandLockup`, `AppSplashSignature`, and `AppLogoChip` compose it for the splash, welcome hero, and about row.
-- **The mascot** ([`lib/core/widgets/mascot_art.dart`](lib/core/widgets/mascot_art.dart)) is one rider character — electric-blue helmet with a white G, deep-blue jacket, black gloves — with a distinct pose per service: wave (splash, welcome), thumbs-up (home), motorbike (GoRide), driving (GoCar), food bag (GoFood), parcel (GoSend), success and puzzled states. The food tiles are six distinct dish illustrations drawn by [`tool/generate_assets.dart`](tool/generate_assets.dart), not one repeated glyph.
+- **The mark** ([`lib/core/widgets/app_mark_painter.dart`](lib/core/widgets/app_mark_painter.dart)) is the **G** from the identity reference, traced as one closed outline rather than approximated from arcs: the reference glyph's connected component was boundary-traced and simplified to 33 vertices, so the drawn mark and the identity assets are the same shape. `GoMotionMarkPainter` is the single source of truth — [`app_logo.dart`](lib/core/widgets/app_logo.dart) composes it into `AppBrandLockup`, `AppSplashSignature`, and `AppLogoChip`, and the mascot reuses it for its helmet and chest decals. One geometry therefore stays crisp from a 20px row to the 132px splash signature to the app icon, with no bundled art and no network.
+- **The mascot** ([`lib/core/widgets/mascot_art.dart`](lib/core/widgets/mascot_art.dart)) is one rider character in an anime-illustration style — glossy deep-blue helmet with a violet visor flipped up onto the brow and a white G decal, dark-navy layered hair with a rim light and a fringe visible under the brim, royal-blue jacket with a chest flash and G + "GoMotion" branding, black riding gloves with a blue cuff band — with a distinct pose per service: wave (splash, welcome), thumbs-up (home), motorbike (GoRide), driving (GoCar), food bag (GoFood), parcel (GoSend), success and puzzled states. Draw order is deliberate (hair → face → fringe → helmet → features), so the brim overlaps the fringe and the visor never covers the eyes; the details stay legible at the 44px inline size. The food tiles are six distinct dish illustrations drawn by [`tool/generate_assets.dart`](tool/generate_assets.dart), not one repeated glyph.
 
 ## Motion and interaction
 
@@ -123,7 +123,7 @@ tokens and stale-timer rejection, each journey flow end to end, real
 tap-through navigation, the motion primitives, and layout checks at 1.0x and
 1.3x text scale with reduced motion enabled.
 
-Current status: **179 tests passing, `flutter analyze` clean.**
+Current status: **185 tests passing, `flutter analyze` clean.**
 
 ## Build and release
 

@@ -6,21 +6,18 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../app/providers/reduced_motion_provider.dart';
 import '../constants/app_colors.dart';
 import '../constants/app_spacing.dart';
+import 'app_mark_painter.dart';
 import 'app_motion.dart';
 
-/// The GoMotion brand mark: a forward "motion arc" with a leading chevron.
+/// The GoMotion brand mark: the heavy, forward-leaning **G** from the identity.
 ///
 /// The mark is drawn rather than bundled so it stays crisp at every size — a
-/// 20px lock-up in a list and a 96px hero share one geometry. It intentionally
-/// replaces the boxy rounded-square glyph with a shape that reads as movement:
+/// 20px lock-up in a list and the 132px splash signature share one geometry
+/// ([GoMotionMarkPainter]). It is a single traced outline, so the stroke weight
+/// is baked in and the glyph never distorts when scaled.
 ///
-/// * a **C-shaped trail** with a tapered tail, implying a path already travelled;
-/// * a **chevron** pitched inside it, angled forward like a heading arrow;
-/// * a small **speed notch** on the trail, so the mark is directional even when
-///   it is rendered at a glance.
-///
-/// Everything is a single rounded stroke path, so the mark never distorts when
-/// scaled: the stroke weight is expressed as a fraction of the box.
+/// The same painter stamps the G on the mascot's helmet and chest, which is what
+/// keeps the character and the logo reading as one brand.
 class AppLogoMark extends StatelessWidget {
   const AppLogoMark({
     this.size = 40,
@@ -85,63 +82,19 @@ class _LogoMarkPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     final s = size.shortestSide;
     if (s <= 0) return;
-    canvas.save();
-    canvas.translate((size.width - s) / 2, (size.height - s) / 2);
-    canvas.scale(s);
-
-    final stroke = Paint()
-      ..color = foreground
-      ..style = PaintingStyle.stroke
-      ..strokeCap = StrokeCap.round
-      ..strokeJoin = StrokeJoin.round;
-
-    final pad = padding;
-    const centre = Offset(0.5, 0.5);
-    final radius = 0.5 - pad;
-
-    // --- Trail: a C that opens toward the upper right, with a tapered tail.
-    // The arc sweeps from 55° to 330° (clockwise), leaving the mouth where the
-    // chevron points. Sweeping as a stroke of varying width would need a path
-    // stack, so the taper is faked with two nested arcs.
-    stroke.strokeWidth = 0.135;
-    canvas.drawArc(
-      Rect.fromCircle(center: centre, radius: radius - 0.0675),
-      math.pi * 0.30,
-      math.pi * 1.55,
-      false,
-      stroke,
+    // The traced glyph already fills its box edge to edge, so the clear space is
+    // applied by insetting the paint box rather than by re-deriving geometry.
+    final inset = s * padding;
+    GoMotionMarkPainter.paint(
+      canvas,
+      Rect.fromLTWH(
+        (size.width - s) / 2 + inset,
+        (size.height - s) / 2 + inset,
+        s - inset * 2,
+        s - inset * 2,
+      ),
+      foreground,
     );
-
-    // Tapered tail: a short arc thinning out toward the opening.
-    stroke.strokeWidth = 0.075;
-    canvas.drawArc(
-      Rect.fromCircle(center: centre, radius: radius - 0.0375),
-      math.pi * 0.16,
-      math.pi * 0.14,
-      false,
-      stroke,
-    );
-
-    // --- Chevron: a forward heading arrow, rounded so it reads soft, not sharp.
-    final chevron = Path()
-      ..moveTo(0.355, 0.300)
-      ..quadraticBezierTo(0.352, 0.302, 0.372, 0.320)
-      ..lineTo(0.560, 0.500)
-      ..lineTo(0.372, 0.680)
-      ..quadraticBezierTo(0.350, 0.700, 0.358, 0.706);
-    stroke
-      ..strokeWidth = 0.135
-      ..style = PaintingStyle.stroke;
-    canvas.drawPath(chevron, stroke);
-
-    // A dot at the chevron tip anchors the eye and softens the apex.
-    canvas.drawCircle(
-      const Offset(0.548, 0.500),
-      0.0675,
-      Paint()..color = foreground,
-    );
-
-    canvas.restore();
   }
 
   @override
@@ -310,11 +263,13 @@ class AppLogoChip extends StatelessWidget {
 /// The mark is geometry-only, so it needs no asset and no network; these are the
 /// only tunables the brand surface exposes.
 abstract final class LogoShape {
-  /// Stroke width of the trail and chevron, as a fraction of the mark box.
-  static const double strokeWeight = 0.135;
+  /// Weight of the ring's stroke as a fraction of the mark box, measured on the
+  /// identity reference. The value is documentation: the glyph bakes its weight
+  /// into the traced outline, so nothing scales it at paint time.
+  static const double strokeWeight = 0.30;
 
   /// Clear space kept around the drawing, as a fraction of the mark box.
-  static const double clearance = 0.16;
+  static const double clearance = 0.10;
 
   /// Gap between the mark and a wordmark, as a multiple of the mark size.
   static const double lockupGap = 0.34;
