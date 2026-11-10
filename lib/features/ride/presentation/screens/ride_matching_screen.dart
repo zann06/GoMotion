@@ -17,10 +17,10 @@ import '../../../../core/widgets/app_states.dart';
 import '../../../../core/widgets/fixture_gate.dart';
 import '../../../../core/widgets/mascot.dart';
 import '../../../../core/widgets/primary_button.dart';
-import '../../../../domain/entities/fixtures.dart';
 import '../../../../domain/entities/ride.dart';
 import '../../../../domain/repositories/fixture_repository.dart';
 import '../../../ride/application/ride_controller.dart';
+import '../widgets/driver_card.dart';
 
 /// The radar search, driver reveal, and driver-approach screen.
 ///
@@ -186,10 +186,13 @@ class _MatchingBodyState extends ConsumerState<_MatchingBody> {
                   const SizedBox(height: 220),
                   const SizedBox(height: AppSpacing.lg),
                   if (hasDriver) ...[
-                    _DriverCard(
+                    DriverCard(
                       driver: driver,
-                      vehicleLabel: ride.vehicle?.label ?? 'Demo vehicle',
-                      stage: ride.stage,
+                      vehicle: ride.vehicle,
+                      status: ride.stage == RideStage.driverArriving
+                          ? DemoCopy.arrival
+                          : 'On the way',
+                      showCall: false,
                     ),
                     const SizedBox(height: AppSpacing.md),
                     _ApproachSteps(stage: ride.stage),
@@ -458,130 +461,6 @@ class _SearchingCopy extends StatelessWidget {
           DemoCopy.simulation,
           style: AppTypography.caption,
           textAlign: TextAlign.center,
-        ),
-      ],
-    );
-  }
-}
-
-class _DriverCard extends StatelessWidget {
-  const _DriverCard({
-    required this.driver,
-    required this.vehicleLabel,
-    required this.stage,
-  });
-
-  final Driver driver;
-  final String vehicleLabel;
-  final RideStage stage;
-
-  @override
-  Widget build(BuildContext context) {
-    final arriving = stage == RideStage.driverArriving;
-    return AppCard(
-      semanticLabel:
-          '${DemoCopy.driver} ${driver.displayName}, rating '
-          '${driver.rating}, $vehicleLabel',
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Row(
-            children: [
-              ClipRRect(
-                borderRadius: AppRadius.tile,
-                child: Image.asset(
-                  ImageAssets.resolve(driver.avatarAsset),
-                  width: 56,
-                  height: 56,
-                  fit: BoxFit.cover,
-                  // A missing optional avatar degrades to an icon, never a crash.
-                  errorBuilder: (context, error, stack) => Container(
-                    width: 56,
-                    height: 56,
-                    color: AppColors.indigoTint,
-                    child: const Icon(
-                      Icons.person_rounded,
-                      color: AppColors.primaryIndigo,
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(width: AppSpacing.sm),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(driver.displayName, style: AppTypography.itemTitle),
-                    const SizedBox(height: 2),
-                    Row(
-                      children: [
-                        const Icon(
-                          Icons.star_rounded,
-                          size: 14,
-                          color: AppColors.warning,
-                        ),
-                        const SizedBox(width: 2),
-                        Text(
-                          '${driver.rating} · '
-                          '${driver.completedDemoTrips} demo trips',
-                          style: AppTypography.caption,
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: AppSpacing.sm),
-          const Divider(height: 1, color: AppColors.lightBorder),
-          const SizedBox(height: AppSpacing.sm),
-          Row(
-            children: [
-              Expanded(
-                child: _MiniStat(label: 'Vehicle', value: vehicleLabel),
-              ),
-              Expanded(
-                child: _MiniStat(
-                  label: 'Plate',
-                  value:
-                      '${DemoCopy.plate} ${driver.seedOrder.toString().padLeft(3, '0')}',
-                ),
-              ),
-              Expanded(
-                child: _MiniStat(
-                  label: 'Status',
-                  value: arriving ? 'Arrived' : 'On the way',
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: AppSpacing.xs),
-          const Text(DemoCopy.driver, style: AppTypography.caption),
-        ],
-      ),
-    );
-  }
-}
-
-class _MiniStat extends StatelessWidget {
-  const _MiniStat({required this.label, required this.value});
-
-  final String label;
-  final String value;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(label, style: AppTypography.caption),
-        const SizedBox(height: 2),
-        Text(
-          value,
-          style: AppTypography.itemTitle,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
         ),
       ],
     );

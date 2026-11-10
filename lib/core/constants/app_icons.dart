@@ -71,6 +71,9 @@ abstract final class AppIcons {
   static const IconData destination = Icons.place_rounded;
   static const IconData search = Icons.search_rounded;
 
+  /// The generic vehicle glyph used on driver cards.
+  static const IconData vehicle = Icons.directions_car_filled_rounded;
+
   /// Resolves a fixture category to its vehicle icon.
   static IconData vehicleFor(String? category) =>
       VehicleKind.fromCategory(category).icon;

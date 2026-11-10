@@ -124,7 +124,7 @@ tokens and stale-timer rejection, each journey flow end to end, real
 tap-through navigation, the motion primitives, and layout checks at 1.0x and
 1.3x text scale with reduced motion enabled.
 
-Current status: **185 tests passing, `flutter analyze` clean.**
+Current status: **188 tests passing, `flutter analyze` clean.**
 
 ## Build and release
 

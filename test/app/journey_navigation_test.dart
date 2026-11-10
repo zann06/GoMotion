@@ -230,4 +230,87 @@ void main() {
     expect(find.text('Your activity'), findsOneWidget);
     expect(find.text('No demo journeys yet'), findsOneWidget);
   });
+
+  testWidgets('vehicle selection offers a promo row that applies a code', (
+    tester,
+  ) async {
+    await pumpApp(tester, AppRoutes.destinationSearch);
+    await chooseFirstDestination(tester);
+
+    // The reference puts the promo entry on the vehicle list, not only on the
+    // review screen, so a rider can discount before choosing.
+    expect(find.text('Use Promo Code'), findsOneWidget);
+
+    await tester.ensureVisible(find.text('Use Promo Code'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Use Promo Code'));
+    await tester.pumpAndSettle();
+
+    await tester.enterText(find.byType(TextField).last, 'MOVE10');
+    await tester.tap(find.text('Apply code'));
+    await tester.pumpAndSettle();
+
+    expect(find.textContaining('MOVE10'), findsWidgets);
+    expect(find.text('Use Promo Code'), findsNothing);
+  });
+
+  testWidgets('the driver card shows the plate and a demo-only call button', (
+    tester,
+  ) async {
+    await pumpApp(tester, AppRoutes.destinationSearch);
+    await chooseFirstDestination(tester);
+
+    await tester.tap(find.textContaining('Review Rp'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Confirm demo booking'));
+    await tester.pumpAndSettle();
+
+    clock.advance(SimulationTiming.matching);
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 400));
+
+    // The plate comes from the fixture, not a synthetic index.
+    expect(find.textContaining('B '), findsWidgets);
+
+    // Matching hides the call button: there is nobody to call yet.
+    expect(find.byIcon(Icons.call_rounded), findsNothing);
+
+    clock.advance(SimulationTiming.driverApproach);
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 400));
+    await tester.tap(find.text('Confirm pickup and start'));
+    await tester.pumpAndSettle();
+
+    // On the live trip the card offers calling, and it explains it is simulated
+    // rather than opening a dialer.
+    expect(find.byIcon(Icons.call_rounded), findsOneWidget);
+    await tester.tap(find.byIcon(Icons.call_rounded));
+    await tester.pumpAndSettle();
+    expect(find.text('Calling is simulated'), findsOneWidget);
+  });
+
+  testWidgets('live tracking shows a remaining time and distance badge', (
+    tester,
+  ) async {
+    await pumpApp(tester, AppRoutes.destinationSearch);
+    await chooseFirstDestination(tester);
+
+    await tester.tap(find.textContaining('Review Rp'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Confirm demo booking'));
+    await tester.pumpAndSettle();
+
+    clock.advance(SimulationTiming.matching);
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 400));
+    clock.advance(SimulationTiming.driverApproach);
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 400));
+    await tester.tap(find.text('Confirm pickup and start'));
+    await tester.pumpAndSettle();
+
+    // At the start of the trip the badge reports the whole remaining leg.
+    expect(find.textContaining('min'), findsWidgets);
+    expect(find.textContaining('km left'), findsOneWidget);
+  });
 }

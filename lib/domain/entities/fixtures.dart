@@ -87,12 +87,18 @@ class Vehicle {
     required this.baseFare,
     required this.perKmFare,
     required this.estimatedMinutes,
+    this.plate = '',
   });
 
   final String id;
   final String category;
   final String label;
   final int capacity;
+
+  /// Fictional licence plate shown on the driver card, e.g. `B 2847 GM`.
+  ///
+  /// Empty when a fixture omits it, which keeps older fixtures loadable.
+  final String plate;
 
   /// Integer rupiah base fare.
   final int baseFare;

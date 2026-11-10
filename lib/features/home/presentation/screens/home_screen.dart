@@ -14,7 +14,9 @@ import '../../../../core/widgets/app_page.dart';
 import '../../../../core/widgets/fixture_gate.dart';
 import '../../../../core/widgets/mascot.dart';
 import '../../../../core/widgets/schematic_map.dart';
+import '../../../../domain/entities/activity_record.dart';
 import '../../../../domain/entities/fixtures.dart';
+import '../../../activity/application/activity_controller.dart';
 import '../../application/active_journey_provider.dart';
 import '../widgets/demo_avatar.dart';
 
@@ -293,16 +295,25 @@ class _ServiceShortcuts extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final active = ref.watch(activeJourneyProvider);
+    final records = ref.watch(activityProvider);
 
     // A service tile resumes its live journey instead of starting over.
     String locationFor(ActiveJourneyKind kind, String fallback) =>
         active?.kind == kind ? active!.location : fallback;
+
+    /// Unrated completed journeys for this service, which is what the reference's
+    /// notification badge counts.
+    int unratedFor(ActivityKind kind) => records
+        .where((r) => r.kind == kind && r.rating == null)
+        .where((r) => r.status == ActivityStatus.completed)
+        .length;
 
     final services = <_Service>[
       _Service(
         label: 'Ride',
         icon: AppIcons.ride,
         color: AppColors.primaryIndigo,
+        badge: unratedFor(ActivityKind.ride),
         onTap: () => context.push(
           locationFor(ActiveJourneyKind.ride, AppRoutes.destinationSearch),
         ),
@@ -311,6 +322,7 @@ class _ServiceShortcuts extends ConsumerWidget {
         label: 'Food',
         icon: AppIcons.food,
         color: AppColors.electricBlue,
+        badge: unratedFor(ActivityKind.food),
         onTap: () =>
             context.push(locationFor(ActiveJourneyKind.food, AppRoutes.food)),
       ),
@@ -318,6 +330,7 @@ class _ServiceShortcuts extends ConsumerWidget {
         label: 'Send',
         icon: AppIcons.send,
         color: AppColors.violet,
+        badge: unratedFor(ActivityKind.send),
         onTap: () =>
             context.push(locationFor(ActiveJourneyKind.send, AppRoutes.send)),
       ),
@@ -328,7 +341,6 @@ class _ServiceShortcuts extends ConsumerWidget {
         onTap: () => context.goNamed(AppRoutes.rewardsName),
       ),
     ];
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -354,12 +366,18 @@ class _Service {
     required this.icon,
     required this.color,
     required this.onTap,
+    this.badge = 0,
   });
 
   final String label;
   final IconData icon;
   final Color color;
   final VoidCallback onTap;
+
+  /// Count shown as a notification dot, mirroring the reference's badge.
+  ///
+  /// Zero hides the badge entirely.
+  final int badge;
 }
 
 class _ServiceTile extends StatelessWidget {
@@ -375,31 +393,63 @@ class _ServiceTile extends StatelessWidget {
         vertical: AppSpacing.md,
       ),
       onTap: service.onTap,
-      semanticLabel: '${service.label} service',
+      semanticLabel: service.badge > 0
+          ? '${service.label} service, ${service.badge} unrated journeys'
+          : '${service.label} service',
       child: Column(
         children: [
-          Container(
-            width: 46,
-            height: 46,
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  service.color,
-                  Color.lerp(service.color, AppColors.white, 0.22)!,
-                ],
-              ),
-              borderRadius: AppRadius.tile,
-              boxShadow: [
-                BoxShadow(
-                  color: service.color.withValues(alpha: 0.28),
-                  blurRadius: 10,
-                  offset: const Offset(0, 4),
+          Stack(
+            clipBehavior: Clip.none,
+            children: [
+              Container(
+                width: 46,
+                height: 46,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      service.color,
+                      Color.lerp(service.color, AppColors.white, 0.22)!,
+                    ],
+                  ),
+                  borderRadius: AppRadius.tile,
+                  boxShadow: [
+                    BoxShadow(
+                      color: service.color.withValues(alpha: 0.28),
+                      blurRadius: 10,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
                 ),
-              ],
-            ),
-            child: Icon(service.icon, color: AppColors.white, size: 23),
+                child: Icon(service.icon, color: AppColors.white, size: 23),
+              ),
+              if (service.badge > 0)
+                Positioned(
+                  top: -4,
+                  right: -4,
+                  child: Container(
+                    constraints: const BoxConstraints(minWidth: 18),
+                    height: 18,
+                    padding: const EdgeInsets.symmetric(horizontal: 4),
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      color: AppColors.white,
+                      borderRadius: AppRadius.chip,
+                      border: Border.all(color: service.color, width: 1.5),
+                    ),
+                    child: Text(
+                      service.badge > 9 ? '9+' : '${service.badge}',
+                      style: AppTypography.caption.copyWith(
+                        color: service.color,
+                        fontWeight: FontWeight.w800,
+                        fontSize: 10,
+                        height: 1,
+                      ),
+                    ),
+                  ),
+                ),
+            ],
           ),
           const SizedBox(height: AppSpacing.xs),
           Text(

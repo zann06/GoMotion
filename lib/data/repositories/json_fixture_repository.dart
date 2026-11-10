@@ -217,6 +217,7 @@ final class JsonFixtureRepository implements FixtureRepository {
       baseFare: _int(json, 'base_fare'),
       perKmFare: _int(json, 'per_km_fare'),
       estimatedMinutes: _int(json, 'estimated_minutes'),
+      plate: _strOr(json, 'plate', ''),
     );
   }
 
@@ -298,6 +299,15 @@ final class JsonFixtureRepository implements FixtureRepository {
       );
     }
     return value;
+  }
+
+  /// Reads an optional string, falling back to [orElse] when absent.
+  ///
+  /// Used for additive fixture fields so a fixture written before the field
+  /// existed still loads.
+  String _strOr(Map<String, Object?> json, String key, String orElse) {
+    final value = json[key];
+    return value is String && value.isNotEmpty ? value : orElse;
   }
 
   int _int(Map<String, Object?> json, String key) {

@@ -194,6 +194,8 @@ class _VehicleBodyState extends ConsumerState<_VehicleBody> {
             ),
           ),
           const SizedBox(height: AppSpacing.lg),
+          _PromoRow(ride: ride),
+          const SizedBox(height: AppSpacing.lg),
           SectionHeader(
             title: 'Vehicle options',
             subtitle: '${distance.toStringAsFixed(1)} km simulated distance',
@@ -326,6 +328,146 @@ class _VehicleCard extends StatelessWidget {
               color: AppColors.primaryIndigo,
             ),
           ],
+        ],
+      ),
+    );
+  }
+}
+
+/// The "Use Promo Code" row from the reference.
+///
+/// Applies a bundled demo promo to the current quote. The controller owns
+/// eligibility, so the row only reports the outcome it is given.
+class _PromoRow extends ConsumerStatefulWidget {
+  const _PromoRow({required this.ride});
+
+  final Ride ride;
+
+  @override
+  ConsumerState<_PromoRow> createState() => _PromoRowState();
+}
+
+class _PromoRowState extends ConsumerState<_PromoRow> {
+  /// Owned by the state, not by `_openSheet`, so the controller outlives the
+  /// sheet's dismissal animation instead of being disposed mid-transition.
+  late final TextEditingController _code = TextEditingController(
+    text: widget.ride.promoCode ?? '',
+  );
+
+  @override
+  void dispose() {
+    _code.dispose();
+    super.dispose();
+  }
+
+  Future<void> _openSheet() async {
+    _code.text = widget.ride.promoCode ?? '';
+    final applied = await showModalBottomSheet<String>(
+      context: context,
+      isScrollControlled: true,
+      showDragHandle: true,
+      backgroundColor: AppColors.white,
+      builder: (sheetContext) => Padding(
+        padding: EdgeInsets.fromLTRB(
+          AppSpacing.lg,
+          0,
+          AppSpacing.lg,
+          AppSpacing.lg + MediaQuery.viewInsetsOf(sheetContext).bottom,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            const Text('Use promo code', style: AppTypography.section),
+            const SizedBox(height: AppSpacing.xxs),
+            const Text(
+              'These codes belong to the bundled demo dataset. Nothing is '
+              'validated online.',
+              style: AppTypography.bodyMuted,
+            ),
+            const SizedBox(height: AppSpacing.md),
+            TextField(
+              controller: _code,
+              autofocus: true,
+              textCapitalization: TextCapitalization.characters,
+              decoration: const InputDecoration(
+                labelText: 'Promo code',
+                hintText: 'MOVE10',
+              ),
+              onSubmitted: (value) =>
+                  Navigator.of(sheetContext).pop(value.trim()),
+            ),
+            const SizedBox(height: AppSpacing.md),
+            PrimaryButton(
+              label: 'Apply code',
+              icon: Icons.local_offer_rounded,
+              onPressed: () =>
+                  Navigator.of(sheetContext).pop(_code.text.trim()),
+            ),
+          ],
+        ),
+      ),
+    );
+
+    if (applied == null || applied.isEmpty || !mounted) return;
+
+    final failure = ref.read(rideProvider.notifier).applyPromoCode(applied);
+    final messenger = ScaffoldMessenger.maybeOf(context);
+    messenger?.showSnackBar(
+      SnackBar(
+        content: Text(
+          failure?.message ?? 'Demo promo $applied applied to this fare.',
+        ),
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final code = widget.ride.promoCode;
+    final applied = code != null && code.isNotEmpty;
+
+    return AppCard(
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.md,
+        vertical: AppSpacing.sm,
+      ),
+      onTap: _openSheet,
+      semanticLabel: applied
+          ? 'Promo code $code applied. Change promo code'
+          : 'Use a promo code',
+      child: Row(
+        children: [
+          Icon(
+            applied
+                ? Icons.local_offer_rounded
+                : Icons.confirmation_number_outlined,
+            size: 20,
+            color: applied ? AppColors.success : AppColors.primaryIndigo,
+          ),
+          const SizedBox(width: AppSpacing.sm),
+          Expanded(
+            child: Text(
+              applied ? 'Promo $code applied' : 'Use Promo Code',
+              style: AppTypography.itemTitle.copyWith(
+                color: applied ? AppColors.success : AppColors.deepNavy,
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          if (applied)
+            TextButton(
+              onPressed: () => ref.read(rideProvider.notifier).clearPromo(),
+              child: const Text('Remove'),
+            )
+          else
+            const Icon(
+              Icons.chevron_right_rounded,
+              size: 20,
+              color: AppColors.neutralGray,
+            ),
         ],
       ),
     );
