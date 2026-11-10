@@ -6,6 +6,7 @@ import '../../../../core/constants/app_constants.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/constants/app_typography.dart';
 import '../../../../core/widgets/app_card.dart';
+import '../../../../core/widgets/app_logo.dart';
 import '../../../../core/widgets/app_page.dart';
 import '../../../../core/widgets/app_states.dart';
 import '../../../../core/widgets/primary_button.dart';
@@ -56,32 +57,15 @@ class AboutScreen extends StatelessWidget {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          AppCard(
+          const AppCard(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
                   children: [
-                    ClipRRect(
-                      borderRadius: AppRadius.tile,
-                      child: Image.asset(
-                        ImageAssets.brandMark,
-                        width: 44,
-                        height: 44,
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stack) => Container(
-                          width: 44,
-                          height: 44,
-                          color: AppColors.indigoTint,
-                          child: const Icon(
-                            Icons.near_me_rounded,
-                            color: AppColors.primaryIndigo,
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: AppSpacing.sm),
-                    const Expanded(
+                    AppLogoChip(size: 44),
+                    SizedBox(width: AppSpacing.sm),
+                    Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -93,14 +77,11 @@ class AboutScreen extends StatelessWidget {
                         ],
                       ),
                     ),
-                    const StatusPill(label: DemoCopy.pill),
+                    StatusPill(label: DemoCopy.pill),
                   ],
                 ),
-                const SizedBox(height: AppSpacing.sm),
-                const Text(
-                  AppInfo.offlineNotice,
-                  style: AppTypography.bodyMuted,
-                ),
+                SizedBox(height: AppSpacing.sm),
+                Text(AppInfo.offlineNotice, style: AppTypography.bodyMuted),
               ],
             ),
           ),

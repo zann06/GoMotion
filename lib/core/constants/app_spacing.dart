@@ -93,6 +93,12 @@ abstract final class AppShadows {
     BoxShadow(color: Color(0x0D111827), blurRadius: 12, offset: Offset(0, 4)),
   ];
 
+  /// Shadow for an interactive card: a touch softer and lower, so the press
+  /// and hover response has somewhere to travel without a visible jump.
+  static const List<BoxShadow> cardLifted = [
+    BoxShadow(color: Color(0x12111827), blurRadius: 18, offset: Offset(0, 6)),
+  ];
+
   /// Raised surface, such as a sticky CTA bar.
   static const List<BoxShadow> raised = [
     BoxShadow(color: Color(0x14111827), blurRadius: 24, offset: Offset(0, 8)),

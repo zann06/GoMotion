@@ -10,6 +10,8 @@ import '../../../../core/constants/app_typography.dart';
 import '../../../../core/constants/mascot_assets.dart';
 import '../../../../core/navigation/app_routes.dart';
 import '../../../../core/widgets/app_card.dart';
+import '../../../../core/widgets/app_logo.dart';
+import '../../../../core/widgets/app_motion.dart';
 import '../../../../core/widgets/app_page.dart';
 import '../../../../core/widgets/app_states.dart';
 import '../../../../core/widgets/mascot.dart';
@@ -64,36 +66,93 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          const SizedBox(height: AppSpacing.xl),
-          Container(
-            height: 190,
-            decoration: const BoxDecoration(
-              gradient: AppColors.primaryGradient,
-              borderRadius: AppRadius.hero,
-            ),
-            child: const Center(
-              child: Mascot(variant: MascotVariant.wave, size: MascotSize.hero),
+          const SizedBox(height: AppSpacing.sm),
+          // Hero: a soft brand surface that holds the lock-up and the mascot
+          // together, so the first screen after the splash continues the brand
+          // rather than restarting with a bare card.
+          AppReveal(
+            offset: 0.07,
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                gradient: AppColors.heroGradient,
+                borderRadius: AppRadius.hero,
+                boxShadow: [
+                  BoxShadow(
+                    color: AppColors.deepBlue.withValues(alpha: 0.24),
+                    blurRadius: 24,
+                    offset: const Offset(0, 10),
+                  ),
+                ],
+              ),
+              // The hero sizes to its content with a 208px floor: a fixed height
+              // would clip the lock-up at a raised text scale.
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(minHeight: 208),
+                child: const Stack(
+                  children: [
+                    // Faint orbit rings add depth without competing with
+                    // content.
+                    Positioned(
+                      right: -28,
+                      top: -34,
+                      child: _OrbitRing(size: 168, opacity: 0.14),
+                    ),
+                    Positioned(
+                      right: 26,
+                      bottom: -54,
+                      child: _OrbitRing(size: 132, opacity: 0.10),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: AppSpacing.lg,
+                        vertical: AppSpacing.md,
+                      ),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: AppBrandLockup(
+                              markSize: 44,
+                              showTagline: true,
+                              foreground: AppColors.white,
+                              markForeground: AppColors.white,
+                              gradient: null,
+                            ),
+                          ),
+                          SizedBox(width: AppSpacing.xs),
+                          Mascot(
+                            variant: MascotVariant.wave,
+                            size: MascotSize.hero,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
           ),
           const SizedBox(height: AppSpacing.xl),
-          for (final (icon, title, body) in _points) ...[
-            AppCard(
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Icon(icon, size: 20, color: AppColors.primaryIndigo),
-                  const SizedBox(width: AppSpacing.sm),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(title, style: AppTypography.itemTitle),
-                        const SizedBox(height: AppSpacing.xxs),
-                        Text(body, style: AppTypography.bodyMuted),
-                      ],
+          for (final (index, (icon, title, bodyPoint)) in _points.indexed) ...[
+            AppReveal(
+              index: index + 1,
+              child: AppCard(
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Icon(icon, size: 20, color: AppColors.primaryIndigo),
+                    const SizedBox(width: AppSpacing.sm),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(title, style: AppTypography.itemTitle),
+                          const SizedBox(height: AppSpacing.xxs),
+                          Text(bodyPoint, style: AppTypography.bodyMuted),
+                        ],
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
             const SizedBox(height: AppSpacing.sm),
@@ -123,4 +182,29 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
           'created for this demo.',
     ),
   ];
+}
+
+/// A faint concentric ring used to give the hero surface depth.
+class _OrbitRing extends StatelessWidget {
+  const _OrbitRing({required this.size, required this.opacity});
+
+  final double size;
+  final double opacity;
+
+  @override
+  Widget build(BuildContext context) {
+    return IgnorePointer(
+      child: Container(
+        width: size,
+        height: size,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          border: Border.all(
+            color: AppColors.white.withValues(alpha: opacity),
+            width: 1.5,
+          ),
+        ),
+      ),
+    );
+  }
 }

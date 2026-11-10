@@ -8,8 +8,9 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_constants.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/constants/app_typography.dart';
-import '../../../../core/constants/mascot_assets.dart';
 import '../../../../core/navigation/app_routes.dart';
+import '../../../../core/widgets/app_logo.dart';
+import '../../../../core/widgets/app_motion.dart';
 import '../../../../core/widgets/mascot.dart';
 
 /// First frame of the app: the mascot waves hello while a short brand progress
@@ -67,62 +68,95 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.deepBlue,
-      body: DecoratedBox(
+      // The progress indicator sits outside the centred column so a large text
+      // scale can never push it off the screen: the centre block stays centred
+      // and the loader keeps its own row at the bottom.
+      bottomNavigationBar: DecoratedBox(
         decoration: const BoxDecoration(gradient: AppColors.primaryGradient),
         child: SafeArea(
-          child: Center(
-            child: Padding(
-              padding: const EdgeInsets.all(AppSpacing.xl),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Mascot(
-                    variant: MascotVariant.wave,
-                    size: MascotSize.hero,
-                  ),
-                  const SizedBox(height: AppSpacing.xl),
-                  Text(
-                    AppInfo.name,
-                    style: AppTypography.display.copyWith(
-                      color: AppColors.white,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: AppSpacing.xxs),
-                  const Text(
-                    AppInfo.tagline,
-                    style: AppTypography.onGradientBody,
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: AppSpacing.xxl),
-                  ClipRRect(
+          top: false,
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(
+              AppSpacing.xl,
+              AppSpacing.md,
+              AppSpacing.xl,
+              AppSpacing.xl,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                AppReveal(
+                  index: 3,
+                  offset: 0.04,
+                  child: ClipRRect(
                     borderRadius: AppRadius.chip,
                     child: SizedBox(
-                      width: 148,
+                      width: 168,
                       child: AnimatedBuilder(
                         animation: _controller,
-                        builder: (context, _) => LinearProgressIndicator(
+                        builder: (context, _) => AppProgressBar(
                           value: _controller.value,
-                          minHeight: 5,
-                          backgroundColor: AppColors.white.withValues(
-                            alpha: 0.22,
-                          ),
-                          valueColor: const AlwaysStoppedAnimation<Color>(
-                            AppColors.white,
-                          ),
+                          height: 5,
+                          color: AppColors.white,
+                          trackColor: AppColors.white.withValues(alpha: 0.22),
+                          semanticLabel: 'Loading',
                         ),
                       ),
                     ),
                   ),
-                  const SizedBox(height: AppSpacing.md),
-                  const MascotLoadingDots(),
-                  const SizedBox(height: AppSpacing.lg),
-                  Text(
+                ),
+                const SizedBox(height: AppSpacing.md),
+                const MascotLoadingDots(),
+                const SizedBox(height: AppSpacing.md),
+                AppReveal(
+                  index: 4,
+                  offset: 0.04,
+                  child: Text(
                     'Offline demo — no network, GPS, or payments',
                     style: AppTypography.caption.copyWith(
                       color: AppColors.white.withValues(alpha: 0.85),
                     ),
                     textAlign: TextAlign.center,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+      body: DecoratedBox(
+        decoration: const BoxDecoration(gradient: AppColors.primaryGradient),
+        child: SafeArea(
+          bottom: false,
+          child: Center(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(AppSpacing.xl),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const AppSplashSignature(),
+                  const SizedBox(height: AppSpacing.xl),
+                  AppReveal(
+                    index: 1,
+                    offset: 0.06,
+                    child: Text(
+                      AppInfo.name,
+                      style: AppTypography.display.copyWith(
+                        color: AppColors.white,
+                        letterSpacing: -1.2,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                  const SizedBox(height: AppSpacing.xs),
+                  const AppReveal(
+                    index: 2,
+                    offset: 0.06,
+                    child: Text(
+                      AppInfo.tagline,
+                      style: AppTypography.onGradientBody,
+                      textAlign: TextAlign.center,
+                    ),
                   ),
                 ],
               ),

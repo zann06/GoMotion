@@ -125,6 +125,7 @@ class AppPressFeedback extends ConsumerStatefulWidget {
     required this.onTap,
     this.scale = 0.985,
     this.haptics = true,
+    this.liftOnHover = true,
     super.key,
   });
 
@@ -139,21 +140,34 @@ class AppPressFeedback extends ConsumerStatefulWidget {
   /// Whether to fire a light haptic tick on tap.
   final bool haptics;
 
+  /// Whether a pointer hover gently lifts the surface, matching the press-in
+  /// gesture on web and desktop.
+  final bool liftOnHover;
+
   @override
   ConsumerState<AppPressFeedback> createState() => _AppPressFeedbackState();
 }
 
 class _AppPressFeedbackState extends ConsumerState<AppPressFeedback> {
   bool _pressed = false;
+  bool _hovered = false;
 
   void _setPressed(bool value) {
     if (_pressed == value) return;
     setState(() => _pressed = value);
   }
 
+  void _setHovered(bool value) {
+    if (_hovered == value) return;
+    setState(() => _hovered = value);
+  }
+
   @override
   Widget build(BuildContext context) {
     final motion = ref.watch(reduceMotionProvider);
+    final scale = _pressed
+        ? widget.scale
+        : (_hovered && widget.liftOnHover ? 1.008 : 1.0);
 
     return GestureDetector(
       // Opaque so the empty padding of a card is tappable too, matching the
@@ -169,10 +183,12 @@ class _AppPressFeedbackState extends ConsumerState<AppPressFeedback> {
       child: MouseRegion(
         // Signals interactivity on web and desktop, where there is no ripple.
         cursor: SystemMouseCursors.click,
+        onEnter: (_) => _setHovered(true),
+        onExit: (_) => _setHovered(false),
         child: AnimatedScale(
-          scale: _pressed ? widget.scale : 1,
+          scale: scale,
           duration: motion.resolve(AppDuration.press),
-          curve: Curves.easeOut,
+          curve: Curves.easeOutCubic,
           child: widget.child,
         ),
       ),

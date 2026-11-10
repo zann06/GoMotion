@@ -63,3 +63,5 @@ app.*.map.json
 # To publish one again: `git add -f docs/SOME_DOC.md`.
 *.md
 !/README.md
+# Golden captures produced by the asset generator are build output, not source.
+/tool/goldens/

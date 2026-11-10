@@ -45,15 +45,20 @@ class AppCard extends StatelessWidget {
     final effectiveBorder = selected
         ? AppColors.primaryIndigo
         : (borderColor ?? AppColors.lightBorder);
+    // Interactive cards get a slightly softer, deeper shadow so the surface
+    // reads as liftable rather than printed on the background.
+    final shadows = selected
+        ? const <BoxShadow>[]
+        : (onTap == null ? AppShadows.card : AppShadows.cardLifted);
 
     final content = AnimatedContainer(
       duration: AppDuration.value,
-      curve: Curves.easeOut,
+      curve: Curves.easeOutCubic,
       decoration: BoxDecoration(
         color: background,
         borderRadius: radius,
         border: Border.all(color: effectiveBorder, width: selected ? 1.8 : 1),
-        boxShadow: selected ? null : AppShadows.card,
+        boxShadow: shadows,
       ),
       // A transparent Material gives descendants such as ListTile a surface for
       // ink effects on top of the decorated card.

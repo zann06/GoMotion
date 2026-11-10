@@ -4,7 +4,7 @@
 
 [![Platform](https://img.shields.io/badge/platform-android%20%7C%20ios%20%7C%20web-2563EB?style=flat-square)](https://flutter.dev)
 [![Runtime](https://img.shields.io/badge/runtime-100%25%20offline-16A34A?style=flat-square)](#offline-guarantees)
-[![Tests](https://img.shields.io/badge/tests-173%20passing-16A34A?style=flat-square)](#quality-gates)
+[![Tests](https://img.shields.io/badge/tests-179%20passing-16A34A?style=flat-square)](#quality-gates)
 [![License](https://img.shields.io/badge/license-MIT-0E2A6E?style=flat-square)](LICENSE)
 
 GoMotion is an offline-first, fictional ride-hailing experience simulator for
@@ -65,13 +65,21 @@ Nothing is billed, booked, or sent anywhere.
 - **Complete local interactions** — no dead-end buttons; every visible action has a defined local outcome.
 - **Maintainable code** — feature-first organization, clean boundaries, Riverpod state management, and testable state machines.
 
+## Brand and character
+
+The identity is drawn, not bundled: no image asset, no icon font, no copied
+operator artwork.
+
+- **The mark** ([`lib/core/widgets/app_logo.dart`](lib/core/widgets/app_logo.dart)) is a tapered motion arc with a forward chevron and a tip dot, stroked as one rounded path so the same geometry stays crisp from a 20px row to the 132px splash signature. `AppBrandLockup`, `AppSplashSignature`, and `AppLogoChip` compose it for the splash, welcome hero, and about row.
+- **The mascot** ([`lib/core/widgets/mascot_art.dart`](lib/core/widgets/mascot_art.dart)) is one rider character — electric-blue helmet with a white G, deep-blue jacket, black gloves — with a distinct pose per service: wave (splash, welcome), thumbs-up (home), motorbike (GoRide), driving (GoCar), food bag (GoFood), parcel (GoSend), success and puzzled states. The food tiles are six distinct dish illustrations drawn by [`tool/generate_assets.dart`](tool/generate_assets.dart), not one repeated glyph.
+
 ## Motion and interaction
 
 Motion is part of the product, not decoration, and it is centralised in
 [`lib/core/widgets/app_motion.dart`](lib/core/widgets/app_motion.dart):
 
-- **`AppReveal`** staggers cards into place on the dashboard, GoFood results, vehicle options, and activity history, so a long screen reads as one movement.
-- **`AppPressFeedback`** answers a press with a short scale-down (the theme has no ink ripple) and a click cursor on web and desktop.
+- **`AppReveal`** staggers cards into place on the dashboard, GoFood results, vehicle options, and activity history, so a long screen reads as one movement. Page headers use it too, so no screen starts with a hard cut.
+- **`AppPressFeedback`** answers a press with a short scale-down and a small hover lift (the theme has no ink ripple), with a click cursor on web and desktop.
 - **`AppProgressBar`** and **`AppAnimatedCounter`** ease between simulated steps, so trip, order, and parcel progress never jumps.
 - Page transitions use one forward fade-slide on Android and desktop; iOS and macOS keep the Cupertino transition so swipe-back still works. Scrolling uses a single physics everywhere.
 
@@ -115,7 +123,7 @@ tokens and stale-timer rejection, each journey flow end to end, real
 tap-through navigation, the motion primitives, and layout checks at 1.0x and
 1.3x text scale with reduced motion enabled.
 
-Current status: **173 tests passing, `flutter analyze` clean.**
+Current status: **179 tests passing, `flutter analyze` clean.**
 
 ## Build and release
 
@@ -146,8 +154,8 @@ before shipping.
 ```
 lib/
   app/          # app root, router, theme, providers
-  core/         # constants, widgets (incl. app_motion.dart), navigation,
-                # feedback, errors
+  core/         # constants, widgets (app_motion.dart, app_logo.dart,
+                # mascot_art.dart), navigation, feedback, errors
   data/         # fixture loading and local preferences
   domain/       # entities, fare rules, repository contracts
   features/     # home, destination, ride, food, send, activity,
@@ -174,7 +182,7 @@ here.
 
 - Fictional simulation only: no real drivers, restaurants, parcels, or payments.
 - Activity and wallets are held in memory for the session; only simple preferences persist.
-- The brand character is drawn in code (`MascotAssets.bundled = false`), so no bitmap pose ships with the repo; dropping PNGs into `assets/mascot/` and flipping that flag swaps in real artwork.
+- The brand character and mark are drawn in code (`MascotAssets.bundled = false`), so no bitmap artwork ships for them; dropping pose PNGs into `assets/mascot/` and flipping that flag swaps in real artwork for the character.
 - iOS release build is unverified in this environment (no macOS/Xcode).
 - Release output uses the debug keystore until `android/key.properties` is provided.
 

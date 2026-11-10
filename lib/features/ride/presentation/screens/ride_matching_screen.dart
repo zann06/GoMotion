@@ -318,53 +318,123 @@ class _RadarPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     final center = Offset(size.width / 2, size.height / 2);
     final maxRadius = size.width / 2;
+    final bounds = Rect.fromCircle(center: center, radius: maxRadius);
 
-    for (var i = 3; i >= 1; i--) {
-      canvas.drawCircle(
-        center,
-        maxRadius * (i / 3),
-        Paint()
-          ..color = AppColors.indigoTint
-          ..style = PaintingStyle.stroke
-          ..strokeWidth = 1.4,
-      );
-    }
-
+    // Ground wash: a radial falloff instead of a flat disc, so the radar melts
+    // into the page rather than sitting on it as a pasted circle.
     canvas.drawCircle(
       center,
       maxRadius,
-      Paint()..color = AppColors.blueTint.withValues(alpha: 0.55),
+      Paint()
+        ..shader = RadialGradient(
+          colors: [
+            AppColors.white,
+            AppColors.blueTint.withValues(alpha: 0.62),
+            AppColors.blueTint.withValues(alpha: 0.0),
+          ],
+          stops: const [0.0, 0.62, 1.0],
+        ).createShader(bounds),
     );
 
-    // A soft wedge trailing the leading edge.
-    final startAngle = sweep * 6.28318530718;
-    canvas.drawArc(
-      Rect.fromCircle(center: center, radius: maxRadius),
-      startAngle,
-      0.9,
-      true,
-      Paint()..color = AppColors.primaryIndigo.withValues(alpha: 0.16),
-    );
+    // Concentric rings: the inner ones are fainter, which reads as depth.
+    for (var i = 3; i >= 1; i--) {
+      canvas.drawCircle(
+        center,
+        maxRadius * (i / 3) * 0.94,
+        Paint()
+          ..color = AppColors.primaryIndigo.withValues(
+            alpha: 0.10 + (3 - i) * 0.03,
+          )
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = 1.2,
+      );
+    }
 
+    // Crosshair ticks at the four compass points.
+    final tick = Paint()
+      ..color = AppColors.primaryIndigo.withValues(alpha: 0.16)
+      ..strokeWidth = 1.2
+      ..strokeCap = StrokeCap.round;
+    for (var i = 0; i < 4; i++) {
+      final angle = math.pi / 4 + i * math.pi / 2;
+      canvas.drawLine(
+        center + Offset(math.cos(angle), math.sin(angle)) * (maxRadius * 0.66),
+        center + Offset(math.cos(angle), math.sin(angle)) * (maxRadius * 0.74),
+        tick,
+      );
+    }
+
+    final startAngle = sweep * math.pi * 2;
+
+    // The sweep wedge fades as it trails the leading edge: drawn as stacked
+    // arcs of decreasing opacity instead of one flat pie slice.
+    const segments = 14;
+    const spread = 1.15;
+    for (var i = 0; i < segments; i++) {
+      final t = i / segments;
+      canvas.drawPath(
+        Path()
+          ..moveTo(center.dx, center.dy)
+          ..arcTo(
+            bounds,
+            startAngle - spread * t,
+            -spread / segments * 1.25,
+            false,
+          )
+          ..close(),
+        Paint()
+          ..color = AppColors.primaryIndigo.withValues(
+            alpha: 0.010 + 0.11 * (1 - t) * (1 - t),
+          ),
+      );
+    }
+
+    // Leading edge: a soft glow, a crisp line, and a bright tip so the sweep
+    // direction is unmistakable without a hard vector look.
+    final tip =
+        center +
+        Offset(math.cos(startAngle), math.sin(startAngle)) * (maxRadius * 0.93);
     canvas.drawLine(
       center,
-      Offset(
-        center.dx + maxRadius * 0.96 * _cos(startAngle),
-        center.dy + maxRadius * 0.96 * _sin(startAngle),
-      ),
+      tip,
       Paint()
-        ..color = AppColors.primaryIndigo
+        ..color = AppColors.primaryIndigo.withValues(alpha: 0.30)
+        ..strokeWidth = 6
+        ..strokeCap = StrokeCap.round
+        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 3),
+    );
+    canvas.drawLine(
+      center,
+      tip,
+      Paint()
+        ..shader = LinearGradient(
+          colors: [
+            AppColors.primaryIndigo.withValues(alpha: 0.25),
+            AppColors.electricBlue,
+          ],
+        ).createShader(Rect.fromPoints(center, tip))
         ..strokeWidth = 2
         ..strokeCap = StrokeCap.round,
     );
+    canvas.drawCircle(tip, 4.2, Paint()..color = AppColors.white);
+    canvas.drawCircle(tip, 2.2, Paint()..color = AppColors.electricBlue);
 
-    canvas.drawCircle(center, 7, Paint()..color = AppColors.primaryIndigo);
-    canvas.drawCircle(center, 3, Paint()..color = AppColors.white);
+    // Hub.
+    canvas.drawCircle(
+      center,
+      9,
+      Paint()..color = AppColors.primaryIndigo.withValues(alpha: 0.14),
+    );
+    canvas.drawCircle(center, 6, Paint()..color = AppColors.white);
+    canvas.drawCircle(
+      center,
+      6,
+      Paint()
+        ..color = AppColors.primaryIndigo
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 1.8,
+    );
   }
-
-  double _cos(double radians) => math.cos(radians);
-
-  double _sin(double radians) => math.sin(radians);
 
   @override
   bool shouldRepaint(covariant _RadarPainter oldDelegate) =>

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../constants/app_colors.dart';
 import '../constants/app_spacing.dart';
 import '../constants/app_typography.dart';
+import 'app_motion.dart';
 
 /// The standard page scaffold used by every GoMotion screen.
 ///
@@ -86,18 +87,24 @@ class AppPage extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 if (hasHeader)
-                  Padding(
-                    padding: EdgeInsets.fromLTRB(
-                      padded ? AppSpacing.pageGutter : 0,
-                      AppSpacing.md,
-                      padded ? AppSpacing.pageGutter : 0,
-                      AppSpacing.md,
-                    ),
-                    child: _Header(
-                      title: title,
-                      subtitle: subtitle,
-                      leading: leading,
-                      actions: actions,
+                  AppReveal(
+                    // The header is the page's anchor: it arrives first and
+                    // slightly faster than the body, so navigation reads as one
+                    // descending movement instead of a hard cut.
+                    offset: 0.10,
+                    child: Padding(
+                      padding: EdgeInsets.fromLTRB(
+                        padded ? AppSpacing.pageGutter : 0,
+                        AppSpacing.md,
+                        padded ? AppSpacing.pageGutter : 0,
+                        AppSpacing.md,
+                      ),
+                      child: _Header(
+                        title: title,
+                        subtitle: subtitle,
+                        leading: leading,
+                        actions: actions,
+                      ),
                     ),
                   ),
                 Expanded(child: bodyContent),

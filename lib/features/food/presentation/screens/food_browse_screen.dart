@@ -208,10 +208,13 @@ class _RestaurantCard extends StatelessWidget {
             ),
             child: Image.asset(
               ImageAssets.resolve(restaurant.imageAsset),
-              height: 120,
-              fit: BoxFit.cover,
+              height: 140,
+              width: double.infinity,
+              // The tiles are square illustrations, so they are fitted rather
+              // than cropped: cover would cut the dish in half.
+              fit: BoxFit.contain,
               errorBuilder: (context, error, stack) => Container(
-                height: 120,
+                height: 140,
                 color: AppColors.indigoTint,
                 child: const Icon(
                   Icons.restaurant_rounded,

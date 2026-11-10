@@ -105,10 +105,13 @@ class _RestaurantBody extends ConsumerWidget {
             borderRadius: AppRadius.card,
             child: Image.asset(
               ImageAssets.resolve(restaurant.imageAsset),
-              height: 160,
-              fit: BoxFit.cover,
+              height: 180,
+              width: double.infinity,
+              // Fitted, not cropped: the illustration is square and a cover fit
+              // would slice the dish.
+              fit: BoxFit.contain,
               errorBuilder: (context, error, stack) => Container(
-                height: 160,
+                height: 180,
                 color: AppColors.indigoTint,
                 child: const Icon(
                   Icons.restaurant_rounded,
@@ -180,7 +183,7 @@ class _MenuItemCard extends ConsumerWidget {
               ImageAssets.resolve(item.imageAsset),
               width: 64,
               height: 64,
-              fit: BoxFit.cover,
+              fit: BoxFit.contain,
               errorBuilder: (context, error, stack) => Container(
                 width: 64,
                 height: 64,
