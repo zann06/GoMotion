@@ -58,7 +58,6 @@ abstract final class FixtureFiles {
 abstract final class ImageAssets {
   static const String directory = 'assets/images/';
 
-  static const String brandMark = '${directory}gomotion_mark.png';
   static const String userAvatar = '${directory}avatar_demo.png';
 
   /// Resolves a bare fixture filename (e.g. `"nori_house.png"`) to its bundled

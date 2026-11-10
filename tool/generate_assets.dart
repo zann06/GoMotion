@@ -9,6 +9,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:gomotion/core/widgets/app_mark_painter.dart';
 
 // Brand tokens, mirrored from docs/DESIGN_SYSTEM.md.
 const Color _indigo = Color(0xFF4F46E5);
@@ -182,7 +183,11 @@ void main() {
   });
 }
 
-/// The GoMotion mark: an indigo tile with a forward chevron and orbit arc.
+/// The GoMotion mark on a brand-gradient tile.
+///
+/// The glyph comes from the shared [GoMotionMarkPainter], which is the same
+/// geometry the in-app logo and the mascot decals use — so a generated icon can
+/// never drift away from the identity the way a private copy would.
 class _MarkTile extends StatelessWidget {
   const _MarkTile();
 
@@ -204,30 +209,19 @@ class _MarkTile extends StatelessWidget {
 class _MarkPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
-    final c = Offset(size.width / 2, size.height / 2);
-    final r = size.width * 0.30;
-    final paint = Paint()
-      ..color = _white
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = size.width * 0.075
-      ..strokeCap = StrokeCap.round
-      ..strokeJoin = StrokeJoin.round;
-
-    // Orbit arc, opened on the left to imply forward motion.
-    canvas.drawArc(
-      Rect.fromCircle(center: c, radius: r),
-      -0.72,
-      5.0,
-      false,
-      paint,
+    // The glyph fills the tile edge to edge, like a launcher icon: 14% clear
+    // space keeps it readable inside the platform's rounded mask.
+    final inset = size.shortestSide * 0.14;
+    GoMotionMarkPainter.paint(
+      canvas,
+      Rect.fromLTWH(
+        (size.width - size.shortestSide) / 2 + inset,
+        (size.height - size.shortestSide) / 2 + inset,
+        size.shortestSide - inset * 2,
+        size.shortestSide - inset * 2,
+      ),
+      _white,
     );
-
-    // Forward chevron.
-    final path = Path()
-      ..moveTo(c.dx - r * 0.38, c.dy - r * 0.52)
-      ..lineTo(c.dx + r * 0.42, c.dy)
-      ..lineTo(c.dx - r * 0.38, c.dy + r * 0.52);
-    canvas.drawPath(path, paint);
   }
 
   @override

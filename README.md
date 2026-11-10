@@ -72,6 +72,7 @@ operator artwork.
 
 - **The mark** ([`lib/core/widgets/app_mark_painter.dart`](lib/core/widgets/app_mark_painter.dart)) is the **G** from the identity reference, traced as one closed outline rather than approximated from arcs: the reference glyph's connected component was boundary-traced and simplified to 33 vertices, so the drawn mark and the identity assets are the same shape. `GoMotionMarkPainter` is the single source of truth — [`app_logo.dart`](lib/core/widgets/app_logo.dart) composes it into `AppBrandLockup`, `AppSplashSignature`, and `AppLogoChip`, and the mascot reuses it for its helmet and chest decals. One geometry therefore stays crisp from a 20px row to the 132px splash signature to the app icon, with no bundled art and no network.
 - **The mascot** ([`lib/core/widgets/mascot_art.dart`](lib/core/widgets/mascot_art.dart)) is one rider character in an anime-illustration style — glossy deep-blue helmet with a violet visor flipped up onto the brow and a white G decal, dark-navy layered hair with a rim light and a fringe visible under the brim, royal-blue jacket with a chest flash and G + "GoMotion" branding, black riding gloves with a blue cuff band — with a distinct pose per service: wave (splash, welcome), thumbs-up (home), motorbike (GoRide), driving (GoCar), food bag (GoFood), parcel (GoSend), success and puzzled states. Draw order is deliberate (hair → face → fringe → helmet → features), so the brim overlaps the fringe and the visor never covers the eyes; the details stay legible at the 44px inline size. The food tiles are six distinct dish illustrations drawn by [`tool/generate_assets.dart`](tool/generate_assets.dart), not one repeated glyph.
+- **The launcher icons** — the browser favicon, the PWA icons, and every Android `mipmap-*` / adaptive-icon layer — are rendered from the same `GoMotionMarkPainter`, so the tab, a home-screen shortcut, and the splash signature can never disagree about the brand. Nothing is hand-exported from a design tool.
 
 ## Motion and interaction
 
@@ -166,7 +167,7 @@ assets/
   images/       # original bundled artwork
   mascot/       # drop-in slot for the brand character (code-drawn by default)
 screenshots/    # README gallery, captured from the release web build
-tool/           # development tooling (screenshot capture)
+tool/           # development tooling (asset + screenshot generation)
 test/           # unit, widget, integration, and accessibility tests
 ```
 
