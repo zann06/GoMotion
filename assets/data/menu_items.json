@@ -34,5 +34,23 @@
     "price": 44000,
     "image_asset": "mushroom_pasta.png",
     "available": true
+  },
+  {
+    "id": "menu_005",
+    "restaurant_id": "rest_nusantara",
+    "name": "Nasi Rendang",
+    "description": "Rice with slow-cooked demo beef rendang",
+    "price": 45000,
+    "image_asset": "rasa_nusantara.png",
+    "available": true
+  },
+  {
+    "id": "menu_006",
+    "restaurant_id": "rest_sweet",
+    "name": "Chocolate Lava Cake",
+    "description": "Warm demo cake with a molten centre",
+    "price": 32000,
+    "image_asset": "sweet_corner.png",
+    "available": true
   }
 ]

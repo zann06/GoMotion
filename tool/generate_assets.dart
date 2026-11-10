@@ -126,6 +126,26 @@ void main() {
       ),
       const Size(200, 200),
     );
+    await capture(
+      tester,
+      'rasa_nusantara',
+      const _FoodTile(
+        color: Color(0xFFF6E7D8),
+        glyph: DishGlyph.rendangPlate,
+        accent: Color(0xFF8A4B2A),
+      ),
+      const Size(200, 200),
+    );
+    await capture(
+      tester,
+      'sweet_corner',
+      const _FoodTile(
+        color: Color(0xFFF7E3E9),
+        glyph: DishGlyph.lavaCake,
+        accent: Color(0xFF6B3F2A),
+      ),
+      const Size(200, 200),
+    );
   });
 
   testWidgets('menu tiles', (tester) async {
@@ -371,6 +391,12 @@ enum DishGlyph {
 
   /// A plate of pasta with mushroom caps.
   mushroomPasta,
+
+  /// A plate of rice with rendang pieces and a cucumber slice.
+  rendangPlate,
+
+  /// A round chocolate cake with a molten centre and a berry.
+  lavaCake,
 }
 
 /// A soft overhead illustration of a dish.
@@ -647,6 +673,108 @@ class _DishPainter extends CustomPainter {
           );
           canvas.restore();
         }
+        break;
+      case DishGlyph.rendangPlate:
+        _plate(canvas, rim: accent.withValues(alpha: 0.30));
+        // Rice mound on the left.
+        canvas.drawOval(
+          Rect.fromCenter(
+            center: const Offset(0.410, 0.505),
+            width: 0.220,
+            height: 0.150,
+          ),
+          Paint()..color = _rice,
+        );
+        canvas.drawOval(
+          Rect.fromCenter(
+            center: const Offset(0.410, 0.492),
+            width: 0.198,
+            height: 0.112,
+          ),
+          Paint()..color = const Color(0xFFF3ECDD),
+        );
+        // Two caramelised rendang pieces with a few rice flecks.
+        for (final (cx, cy, rot, scale) in const [
+          (0.575, 0.462, -0.12, 1.0),
+          (0.638, 0.532, 0.18, 0.86),
+        ]) {
+          canvas.save();
+          canvas.translate(cx, cy);
+          canvas.rotate(rot);
+          canvas.scale(scale);
+          canvas.drawRRect(
+            RRect.fromRectAndRadius(
+              const Rect.fromLTWH(-0.068, -0.046, 0.136, 0.092),
+              const Radius.circular(0.028),
+            ),
+            Paint()..color = accent,
+          );
+          for (final (dx, dy) in const [
+            (-0.034, -0.010),
+            (0.012, 0.020),
+            (0.040, -0.014),
+          ]) {
+            canvas.drawCircle(
+              Offset(dx, dy),
+              0.009,
+              Paint()..color = _rice.withValues(alpha: 0.28),
+            );
+          }
+          canvas.restore();
+        }
+        // A cucumber ring keeps the warm plate from reading as one tone.
+        _circleRing(
+          canvas,
+          const Offset(0.455, 0.605),
+          0.042,
+          const Color(0xFF4E8A5A),
+        );
+        break;
+      case DishGlyph.lavaCake:
+        _plate(canvas, rim: accent.withValues(alpha: 0.30));
+        // Cake body seen from above, with a darker baked edge.
+        canvas.drawOval(
+          Rect.fromCenter(
+            center: const Offset(0.500, 0.530),
+            width: 0.310,
+            height: 0.225,
+          ),
+          Paint()..color = accent,
+        );
+        canvas.drawOval(
+          Rect.fromCenter(
+            center: const Offset(0.500, 0.516),
+            width: 0.272,
+            height: 0.182,
+          ),
+          Paint()..color = const Color(0xFF7A4A33),
+        );
+        // Molten centre.
+        canvas.drawOval(
+          Rect.fromCenter(
+            center: const Offset(0.500, 0.516),
+            width: 0.148,
+            height: 0.092,
+          ),
+          Paint()..color = const Color(0xFFE8B04B),
+        );
+        // A berry and a mint leaf finish the plate.
+        canvas.drawCircle(
+          const Offset(0.592, 0.452),
+          0.030,
+          Paint()..color = const Color(0xFFD9536F),
+        );
+        canvas.drawCircle(
+          const Offset(0.582, 0.444),
+          0.009,
+          Paint()..color = _rice.withValues(alpha: 0.55),
+        );
+        final mint = Path()
+          ..moveTo(0.394, 0.452)
+          ..quadraticBezierTo(0.424, 0.398, 0.458, 0.448)
+          ..quadraticBezierTo(0.424, 0.476, 0.394, 0.452)
+          ..close();
+        canvas.drawPath(mint, Paint()..color = const Color(0xFF5A9E6F));
         break;
     }
 

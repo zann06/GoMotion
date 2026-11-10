@@ -12,6 +12,33 @@ import '../../../simulation/simulation_clock.dart';
 import '../../activity/application/activity_controller.dart';
 import '../../profile/application/profile_controller.dart';
 
+/// Categories exposed by the GoFood browse screen, in reference-board order.
+///
+/// The fixture stores one category per restaurant; the list is fixed so all five
+/// filters stay visible even when a category is temporarily empty.
+const List<String> foodCategories = ['Asian', 'Western', 'Local', 'Dessert'];
+
+/// Filters bundled restaurants for the GoFood browse screen.
+///
+/// Kept outside the widget so category and query behaviour is unit-testable and
+/// the screen only renders the result. Matching is case-insensitive and covers
+/// the restaurant name and its category.
+List<Restaurant> filterRestaurants(
+  Iterable<Restaurant> restaurants, {
+  String? category,
+  String query = '',
+}) {
+  final needle = query.trim().toLowerCase();
+  return [
+    for (final restaurant in restaurants)
+      if ((category == null || restaurant.category == category) &&
+          (needle.isEmpty ||
+              restaurant.name.toLowerCase().contains(needle) ||
+              restaurant.category.toLowerCase().contains(needle)))
+        restaurant,
+  ];
+}
+
 /// Snapshot of the GoFood flow.
 class FoodState {
   const FoodState({this.order, this.generation = 0});

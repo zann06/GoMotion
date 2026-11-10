@@ -219,6 +219,7 @@ class Restaurant {
     required this.name,
     required this.category,
     required this.rating,
+    required this.distanceKm,
     required this.etaLabel,
     required this.imageAsset,
     required this.featured,
@@ -228,6 +229,10 @@ class Restaurant {
   final String name;
   final String category;
   final double rating;
+
+  /// Simulated distance from the demo pickup point, in kilometres.
+  final double distanceKm;
+
   final String etaLabel;
   final String imageAsset;
   final bool featured;

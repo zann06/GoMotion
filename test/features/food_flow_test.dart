@@ -6,6 +6,7 @@ import 'package:gomotion/core/errors/app_failure.dart';
 import 'package:gomotion/data/preferences/preferences_store.dart';
 import 'package:gomotion/data/repositories/json_fixture_repository.dart';
 import 'package:gomotion/domain/entities/activity_record.dart';
+import 'package:gomotion/domain/entities/fixtures.dart';
 import 'package:gomotion/domain/entities/food_order.dart';
 import 'package:gomotion/domain/repositories/fixture_repository.dart';
 import 'package:gomotion/features/activity/application/activity_controller.dart';
@@ -285,6 +286,80 @@ void main() {
         container.read(profileProvider).rewardPoints,
         pointsBefore + AppInfo.demoPointsPerJourney,
       );
+    });
+  });
+
+  group('GoFood browse filtering', () {
+    // Synthetic kitchens so every filter branch is exercised regardless of how
+    // the bundled fixture evolves.
+    const asian = Restaurant(
+      id: 'rest_a',
+      name: 'Nori House',
+      category: 'Asian',
+      rating: 4.8,
+      distanceKm: 1.2,
+      etaLabel: '20–30 min',
+      imageAsset: 'nori_house.png',
+      featured: true,
+    );
+    const dessert = Restaurant(
+      id: 'rest_b',
+      name: 'Sweet Corner',
+      category: 'Dessert',
+      rating: 4.7,
+      distanceKm: 3.4,
+      etaLabel: '15–25 min',
+      imageAsset: 'sweet_corner.png',
+      featured: false,
+    );
+
+    test('categories cover every bundled restaurant category', () async {
+      final bundle = await JsonFixtureRepository().load();
+      for (final restaurant in bundle.restaurants) {
+        expect(
+          foodCategories,
+          contains(restaurant.category),
+          reason: '${restaurant.name} must match a browse category tile',
+        );
+      }
+    });
+
+    test('no filter returns every kitchen', () {
+      final result = filterRestaurants([asian, dessert]);
+      expect(result, [asian, dessert]);
+    });
+
+    test('category keeps only matching kitchens', () {
+      expect(filterRestaurants([asian, dessert], category: 'Asian'), [asian]);
+      expect(filterRestaurants([asian, dessert], category: 'Dessert'), [
+        dessert,
+      ]);
+      expect(filterRestaurants([asian], category: 'Western'), isEmpty);
+    });
+
+    test('query matches name or category, case-insensitively', () {
+      expect(filterRestaurants([asian, dessert], query: 'nori'), [asian]);
+      expect(filterRestaurants([asian, dessert], query: 'SWEET'), [dessert]);
+      expect(filterRestaurants([asian, dessert], query: 'dessert'), [dessert]);
+      expect(filterRestaurants([asian, dessert], query: 'zzz'), isEmpty);
+    });
+
+    test('category and query combine with AND', () {
+      expect(
+        filterRestaurants([asian, dessert], category: 'Asian', query: 'nori'),
+        [asian],
+      );
+      expect(
+        filterRestaurants([asian, dessert], category: 'Asian', query: 'sweet'),
+        isEmpty,
+      );
+    });
+
+    test('blank query behaves like no query after trimming', () {
+      expect(filterRestaurants([asian, dessert], query: '  '), [
+        asian,
+        dessert,
+      ]);
     });
   });
 }

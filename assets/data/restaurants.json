@@ -2,26 +2,49 @@
   {
     "id": "rest_nori",
     "name": "Nori House",
-    "category": "Japanese",
+    "category": "Asian",
     "rating": 4.8,
+    "distance_km": 1.2,
     "eta_label": "20–30 min",
     "image_asset": "nori_house.png",
     "featured": true
   },
   {
+    "id": "rest_nusantara",
+    "name": "Rasa Nusantara",
+    "category": "Local",
+    "rating": 4.8,
+    "distance_km": 2.1,
+    "eta_label": "20–30 min",
+    "image_asset": "rasa_nusantara.png",
+    "featured": true
+  },
+  {
     "id": "rest_bowl",
     "name": "Daily Bowl",
-    "category": "Healthy",
+    "category": "Western",
     "rating": 4.7,
+    "distance_km": 2.8,
     "eta_label": "15–25 min",
     "image_asset": "daily_bowl.png",
     "featured": true
   },
   {
+    "id": "rest_sweet",
+    "name": "Sweet Corner",
+    "category": "Dessert",
+    "rating": 4.7,
+    "distance_km": 3.4,
+    "eta_label": "15–25 min",
+    "image_asset": "sweet_corner.png",
+    "featured": true
+  },
+  {
     "id": "rest_pasta",
     "name": "Pasta Corner",
-    "category": "Italian",
+    "category": "Western",
     "rating": 4.6,
+    "distance_km": 3.9,
     "eta_label": "25–35 min",
     "image_asset": "pasta_corner.png",
     "featured": false

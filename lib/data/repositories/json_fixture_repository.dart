@@ -248,6 +248,7 @@ final class JsonFixtureRepository implements FixtureRepository {
       name: _str(json, 'name'),
       category: _str(json, 'category'),
       rating: _num(json, 'rating'),
+      distanceKm: _num(json, 'distance_km'),
       etaLabel: _str(json, 'eta_label'),
       imageAsset: _str(json, 'image_asset'),
       featured: _bool(json, 'featured'),
