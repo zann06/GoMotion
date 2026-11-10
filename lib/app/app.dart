@@ -64,6 +64,7 @@ class _GoMotionAppState extends ConsumerState<GoMotionApp> {
       debugShowCheckedModeBanner: false,
       scaffoldMessengerKey: rootScaffoldMessengerKey,
       theme: AppTheme.light(),
+      scrollBehavior: const _AppScrollBehavior(),
       routerConfig: _router,
       builder: (context, child) {
         final media = MediaQuery.of(context);
@@ -85,4 +86,26 @@ class _GoMotionAppState extends ConsumerState<GoMotionApp> {
       },
     );
   }
+}
+
+/// Overscroll feel for the whole app.
+///
+/// Scrolling uses one physics everywhere ([BouncingScrollPhysics]) so long
+/// lists, sheets, and short cards behave the same on every platform, and the
+/// platform stretch/glow indicator is dropped because the bounce already
+/// communicates the edge. Reducing it to a single consistent behaviour is what
+/// makes dragging feel smooth rather than platform-dependent.
+class _AppScrollBehavior extends MaterialScrollBehavior {
+  const _AppScrollBehavior();
+
+  @override
+  ScrollPhysics getScrollPhysics(BuildContext context) =>
+      const BouncingScrollPhysics();
+
+  @override
+  Widget buildOverscrollIndicator(
+    BuildContext context,
+    Widget child,
+    ScrollableDetails details,
+  ) => child;
 }

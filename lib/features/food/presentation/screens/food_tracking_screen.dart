@@ -9,6 +9,7 @@ import '../../../../core/constants/app_typography.dart';
 import '../../../../core/constants/mascot_assets.dart';
 import '../../../../core/navigation/app_routes.dart';
 import '../../../../core/widgets/app_card.dart';
+import '../../../../core/widgets/app_motion.dart';
 import '../../../../core/widgets/app_page.dart';
 import '../../../../core/widgets/app_states.dart';
 import '../../../../core/widgets/fixture_gate.dart';
@@ -138,6 +139,13 @@ class _TrackingBody extends ConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                const Text('Delivery progress', style: AppTypography.section),
+                const SizedBox(height: AppSpacing.xs),
+                AppProgressBar(
+                  value: rank / (_steps.length - 1),
+                  semanticLabel: 'Delivery progress',
+                ),
+                const SizedBox(height: AppSpacing.sm),
                 for (final (index, step) in _steps.indexed)
                   Padding(
                     padding: const EdgeInsets.only(bottom: AppSpacing.xs),

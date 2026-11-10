@@ -154,11 +154,15 @@ abstract final class AppTheme {
       highlightColor: Colors.transparent,
       splashColor: Colors.transparent,
       hoverColor: Colors.transparent,
-      // iOS and macOS already default to the platform Cupertino transition, so
-      // only Android needs an explicit builder for the brand's forward fade.
+      // A forward fade-slide on the desktop and Android targets keeps
+      // navigation predictable; iOS and macOS already default to the Cupertino
+      // transition, which preserves the interactive swipe-back edge gesture.
       pageTransitionsTheme: const PageTransitionsTheme(
         builders: {
           TargetPlatform.android: FadeForwardsPageTransitionsBuilder(),
+          TargetPlatform.fuchsia: FadeForwardsPageTransitionsBuilder(),
+          TargetPlatform.linux: FadeForwardsPageTransitionsBuilder(),
+          TargetPlatform.windows: FadeForwardsPageTransitionsBuilder(),
         },
       ),
     );

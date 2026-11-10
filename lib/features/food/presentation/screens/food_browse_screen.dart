@@ -9,6 +9,7 @@ import '../../../../core/constants/app_typography.dart';
 import '../../../../core/constants/mascot_assets.dart';
 import '../../../../core/navigation/app_routes.dart';
 import '../../../../core/widgets/app_card.dart';
+import '../../../../core/widgets/app_motion.dart';
 import '../../../../core/widgets/app_page.dart';
 import '../../../../core/widgets/app_states.dart';
 import '../../../../core/widgets/fixture_gate.dart';
@@ -128,8 +129,12 @@ class _BrowseBody extends ConsumerWidget {
             mascot: MascotVariant.food,
           )
         else
-          for (final restaurant in visible) ...[
-            _RestaurantCard(restaurant: restaurant),
+          for (final (index, restaurant) in visible.indexed) ...[
+            AppReveal(
+              key: ValueKey(restaurant.id),
+              index: index,
+              child: _RestaurantCard(restaurant: restaurant),
+            ),
             const SizedBox(height: AppSpacing.sm),
           ],
       ],

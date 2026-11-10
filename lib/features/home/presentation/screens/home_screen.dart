@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../../app/providers/reduced_motion_provider.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_icons.dart';
 import '../../../../core/constants/app_spacing.dart';
@@ -11,6 +9,7 @@ import '../../../../core/constants/app_typography.dart';
 import '../../../../core/constants/mascot_assets.dart';
 import '../../../../core/navigation/app_routes.dart';
 import '../../../../core/widgets/app_card.dart';
+import '../../../../core/widgets/app_motion.dart';
 import '../../../../core/widgets/app_page.dart';
 import '../../../../core/widgets/fixture_gate.dart';
 import '../../../../core/widgets/mascot.dart';
@@ -28,19 +27,21 @@ class HomeScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return const AppPage(
       padded: true,
+      // Cards arrive as one staggered movement, top to bottom, so the dashboard
+      // feels composed instead of snapping into place.
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          HomeGreeting(),
+          AppReveal(index: 0, child: HomeGreeting()),
           _ActiveJourneyBanner(),
           SizedBox(height: AppSpacing.lg),
-          _JourneyCard(),
+          AppReveal(index: 1, child: _JourneyCard()),
           SizedBox(height: AppSpacing.md),
-          _HomeMap(),
+          AppReveal(index: 2, child: _HomeMap()),
           SizedBox(height: AppSpacing.xl),
-          _ServiceShortcuts(),
+          AppReveal(index: 3, child: _ServiceShortcuts()),
           SizedBox(height: AppSpacing.xl),
-          _PopularNearby(),
+          AppReveal(index: 4, child: _PopularNearby()),
           SizedBox(height: AppSpacing.md),
           _DemoDisclosure(),
         ],
@@ -130,13 +131,12 @@ class _ActiveJourneyBanner extends ConsumerWidget {
 ///
 /// Tapping anywhere on the search field or the card opens destination search,
 /// which is the single obvious next action on this screen.
-class _JourneyCard extends ConsumerWidget {
+class _JourneyCard extends StatelessWidget {
   const _JourneyCard();
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final motion = ref.watch(reduceMotionProvider);
-    final card = Container(
+  Widget build(BuildContext context) {
+    return Container(
       decoration: const BoxDecoration(
         gradient: AppColors.heroGradient,
         borderRadius: AppRadius.hero,
@@ -226,15 +226,6 @@ class _JourneyCard extends ConsumerWidget {
         ],
       ),
     );
-
-    // Reduced motion must never hide content: skip the entrance animation
-    // entirely instead of parking the controller on its invisible first frame.
-    if (motion.enabled) return card;
-
-    return card
-        .animate()
-        .fadeIn(duration: AppDuration.enter)
-        .slideY(begin: 0.03, end: 0, curve: Curves.easeOutCubic);
   }
 }
 
@@ -301,7 +292,6 @@ class _ServiceShortcuts extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final motion = ref.watch(reduceMotionProvider);
     final active = ref.watch(activeJourneyProvider);
 
     // A service tile resumes its live journey instead of starting over.
@@ -348,12 +338,7 @@ class _ServiceShortcuts extends ConsumerWidget {
           children: [
             for (final (index, service) in services.indexed) ...[
               if (index > 0) const SizedBox(width: AppSpacing.sm),
-              Expanded(
-                child: _ServiceTile(
-                  service: service,
-                  animationDuration: motion.resolve(AppDuration.enter),
-                ),
-              ),
+              Expanded(child: _ServiceTile(service: service)),
             ],
           ],
         ),
@@ -378,10 +363,9 @@ class _Service {
 }
 
 class _ServiceTile extends StatelessWidget {
-  const _ServiceTile({required this.service, required this.animationDuration});
+  const _ServiceTile({required this.service});
 
   final _Service service;
-  final Duration animationDuration;
 
   @override
   Widget build(BuildContext context) {

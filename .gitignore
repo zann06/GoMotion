@@ -46,3 +46,20 @@ app.*.map.json
 
 # Widget Preview related
 .widget_preview/
+
+# Local design references.
+#
+# `design/references/` holds the mood-board screenshots used while designing the
+# UI. They are reference material, not GoMotion assets, so they must never be
+# redistributed from this repository.
+/design/references/
+
+# Documentation policy for this repository.
+#
+# Only the top-level README.md is published. The rest of the handover
+# documentation (docs/, CHANGELOG.md, AGENTS.md, prompts/, the GitHub
+# templates) stays local to the working copy so the public repository is the
+# app itself. The files are still on disk; they are simply not tracked.
+# To publish one again: `git add -f docs/SOME_DOC.md`.
+*.md
+!/README.md

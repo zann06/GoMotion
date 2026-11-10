@@ -10,6 +10,7 @@ import '../../../../core/constants/mascot_assets.dart';
 import '../../../../core/navigation/app_routes.dart';
 import '../../../../core/widgets/app_card.dart';
 import '../../../../core/widgets/app_inputs.dart';
+import '../../../../core/widgets/app_motion.dart';
 import '../../../../core/widgets/app_page.dart';
 import '../../../../core/widgets/app_states.dart';
 import '../../../../core/widgets/empty_state_body.dart';
@@ -85,8 +86,12 @@ class _ActivityScreenState extends ConsumerState<ActivityScreen> {
                     mascot: MascotVariant.wave,
                   )
                 else
-                  for (final record in records) ...[
-                    _ActivityCard(record: record),
+                  for (final (index, record) in records.indexed) ...[
+                    AppReveal(
+                      key: ValueKey(record.journeyId),
+                      index: index,
+                      child: _ActivityCard(record: record),
+                    ),
                     const SizedBox(height: AppSpacing.sm),
                   ],
                 const SizedBox(height: AppSpacing.sm),

@@ -10,6 +10,7 @@ import '../../../../core/constants/app_typography.dart';
 import '../../../../core/constants/mascot_assets.dart';
 import '../../../../core/navigation/app_routes.dart';
 import '../../../../core/widgets/app_card.dart';
+import '../../../../core/widgets/app_motion.dart';
 import '../../../../core/widgets/app_page.dart';
 import '../../../../core/widgets/app_states.dart';
 import '../../../../core/widgets/mascot.dart';
@@ -74,7 +75,6 @@ class _TrackingBody extends ConsumerWidget {
     );
     final marker = RouteGeometry.pointAt(route, ride.progress);
     final bearing = RouteGeometry.bearingAt(route, ride.progress);
-    final remaining = (1 - ride.progress).clamp(0.0, 1.0);
     final mascot = MascotVariant.forRideCategory(ride.vehicle?.category);
     final travelling = ride.stage == RideStage.inProgress;
 
@@ -115,23 +115,17 @@ class _TrackingBody extends ConsumerWidget {
                         style: AppTypography.itemTitle,
                       ),
                     ),
-                    Text(
-                      '${(ride.progress * 100).round()}%',
+                    AppAnimatedCounter(
+                      value: ride.progress * 100,
+                      format: (value) => '${value.round()}%',
                       style: AppTypography.amount,
                     ),
                   ],
                 ),
                 const SizedBox(height: AppSpacing.sm),
-                ClipRRect(
-                  borderRadius: AppRadius.chip,
-                  child: LinearProgressIndicator(
-                    value: remaining == 0 ? 1 : ride.progress,
-                    minHeight: 8,
-                    backgroundColor: AppColors.skeleton,
-                    valueColor: const AlwaysStoppedAnimation<Color>(
-                      AppColors.primaryIndigo,
-                    ),
-                  ),
+                AppProgressBar(
+                  value: ride.progress,
+                  semanticLabel: 'Trip progress',
                 ),
                 const SizedBox(height: AppSpacing.sm),
                 Text(

@@ -87,6 +87,7 @@ class _MatchingBodyState extends ConsumerState<_MatchingBody> {
   Widget build(BuildContext context) {
     final state = ref.watch(rideProvider);
     final ride = state.ride ?? widget.ride;
+    final motion = ref.watch(reduceMotionProvider);
     _syncRoute(ride);
 
     final driver = ride.driverId == null
@@ -149,34 +150,58 @@ class _MatchingBodyState extends ConsumerState<_MatchingBody> {
                 ),
               ],
             ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          const SizedBox(height: AppSpacing.lg),
-          if (isSearching) const _Radar() else const SizedBox(height: 220),
-          const SizedBox(height: AppSpacing.lg),
-          if (isSearching)
-            const _SearchingCopy()
-          else if (hasDriver)
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                _DriverCard(
-                  driver: driver,
-                  vehicleLabel: ride.vehicle?.label ?? 'Demo vehicle',
-                  stage: ride.stage,
-                ),
-                const SizedBox(height: AppSpacing.md),
-                _ApproachSteps(stage: ride.stage),
-                const SizedBox(height: AppSpacing.md),
-                const AppNotice(
-                  message:
-                      'Driver, vehicle, and arrival times are simulated from '
-                      'bundled demo data. No GPS is used.',
-                ),
-              ],
-            ),
-        ],
+      body: AnimatedSwitcher(
+        // The radar hands over to the driver card instead of being replaced in
+        // a single frame. `AnimatedSwitcher` is finite, so reduced motion just
+        // shortens the cross-fade rather than removing it.
+        duration: motion.resolve(AppDuration.enter),
+        switchInCurve: Curves.easeOutCubic,
+        switchOutCurve: Curves.easeIn,
+        transitionBuilder: (child, animation) => FadeTransition(
+          opacity: animation,
+          child: SlideTransition(
+            position: Tween<Offset>(
+              begin: const Offset(0, 0.04),
+              end: Offset.zero,
+            ).animate(animation),
+            child: child,
+          ),
+        ),
+        child: isSearching
+            ? const Column(
+                key: ValueKey('matching-search'),
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  SizedBox(height: AppSpacing.lg),
+                  _Radar(),
+                  SizedBox(height: AppSpacing.lg),
+                  _SearchingCopy(),
+                ],
+              )
+            : Column(
+                key: const ValueKey('matching-driver'),
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  const SizedBox(height: AppSpacing.lg),
+                  const SizedBox(height: 220),
+                  const SizedBox(height: AppSpacing.lg),
+                  if (hasDriver) ...[
+                    _DriverCard(
+                      driver: driver,
+                      vehicleLabel: ride.vehicle?.label ?? 'Demo vehicle',
+                      stage: ride.stage,
+                    ),
+                    const SizedBox(height: AppSpacing.md),
+                    _ApproachSteps(stage: ride.stage),
+                    const SizedBox(height: AppSpacing.md),
+                    const AppNotice(
+                      message:
+                          'Driver, vehicle, and arrival times are simulated from '
+                          'bundled demo data. No GPS is used.',
+                    ),
+                  ],
+                ],
+              ),
       ),
     );
   }

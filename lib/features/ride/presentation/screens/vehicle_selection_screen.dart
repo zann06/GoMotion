@@ -11,6 +11,7 @@ import '../../../../core/constants/mascot_assets.dart';
 import '../../../../core/navigation/app_routes.dart';
 import '../../../../core/widgets/app_card.dart';
 import '../../../../core/widgets/app_inputs.dart';
+import '../../../../core/widgets/app_motion.dart';
 import '../../../../core/widgets/app_page.dart';
 import '../../../../core/widgets/app_states.dart';
 import '../../../../core/widgets/fixture_gate.dart';
@@ -198,13 +199,17 @@ class _VehicleBodyState extends ConsumerState<_VehicleBody> {
             subtitle: '${distance.toStringAsFixed(1)} km simulated distance',
           ),
           const SizedBox(height: AppSpacing.sm),
-          for (final vehicle in _sortedVehicles) ...[
-            _VehicleCard(
-              vehicle: vehicle,
-              distanceKm: distance,
-              selected: ride.vehicle?.id == vehicle.id,
-              onTap: () =>
-                  ref.read(rideProvider.notifier).selectVehicle(vehicle),
+          for (final (index, vehicle) in _sortedVehicles.indexed) ...[
+            AppReveal(
+              key: ValueKey(vehicle.id),
+              index: index,
+              child: _VehicleCard(
+                vehicle: vehicle,
+                distanceKm: distance,
+                selected: ride.vehicle?.id == vehicle.id,
+                onTap: () =>
+                    ref.read(rideProvider.notifier).selectVehicle(vehicle),
+              ),
             ),
             const SizedBox(height: AppSpacing.sm),
           ],

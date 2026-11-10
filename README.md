@@ -1,9 +1,41 @@
 # GoMotion
+
 **Move smarter. Feel every journey.**
 
-GoMotion is an offline-first, fictional ride-hailing experience simulator for Android and iOS, built with Flutter and Dart. It recreates the interaction patterns of a modern mobility superapp for learning, demonstrations, and experimentation. It is not a real transportation, delivery, or payment service, and it never contacts a network.
+GoMotion is an offline-first, fictional ride-hailing experience simulator for
+Android and iOS, built with Flutter and Dart. It recreates the interaction
+patterns of a modern mobility superapp for learning, demonstrations, and
+experimentation. It is not a real transportation, delivery, or payment service,
+and it never contacts a network.
 
-![GoMotion product showcase](design/references/gomotion-product-showcase.png)
+### ▶ Live preview
+
+**[https://zann06.github.io/GoMotion/](https://zann06.github.io/GoMotion/)** —
+the release web build, running in your browser. The first launch shows the
+welcome screen; everything after it runs on bundled demo data. Nothing you see
+there is real: drivers, restaurants, fares, wallets, orders, and receipts are
+all fictional.
+
+## Screenshots
+
+All captures come from the release web build (see
+[`tool/capture_screenshots.mjs`](tool/capture_screenshots.mjs)).
+
+| Cold-start splash | Dashboard | Welcome |
+| --- | --- | --- |
+| ![Cold-start splash](screenshots/01-splash.png) | ![Dashboard](screenshots/02-home.png) | ![Welcome](screenshots/03-welcome.png) |
+
+| Destination search | GoFood browse | GoFood menu |
+| --- | --- | --- |
+| ![Destination search](screenshots/04-destination-search.png) | ![GoFood browse](screenshots/05-gofood.png) | ![GoFood menu](screenshots/06-gofood-menu.png) |
+
+| GoSend | Activity | Rewards |
+| --- | --- | --- |
+| ![GoSend](screenshots/07-gosend.png) | ![Activity](screenshots/08-activity.png) | ![Rewards](screenshots/09-rewards.png) |
+
+| Profile | Settings | About |
+| --- | --- | --- |
+| ![Profile](screenshots/10-profile.png) | ![Settings](screenshots/11-settings.png) | ![About](screenshots/12-about.png) |
 
 ## Product principles
 - Fully offline: no backend, API, cloud database, authentication server, remote maps, or remote images.
@@ -21,6 +53,32 @@ GoMotion is an offline-first, fictional ride-hailing experience simulator for An
 - **Onboarding** — a one-time welcome that explains the offline, fictional nature of the demo.
 
 Every screen is reachable from the home shell, and every control works locally. Nothing is billed, booked, or sent anywhere.
+
+## Motion and interaction
+Motion is part of the product, not decoration, and it is centralised in
+`lib/core/widgets/app_motion.dart`:
+
+- **`AppReveal`** staggers cards into place on the dashboard, GoFood results,
+  vehicle options, and activity history, so a long screen reads as one movement.
+- **`AppPressFeedback`** answers a press with a short scale-down (the theme has
+  no ink ripple) and a click cursor on web and desktop.
+- **`AppProgressBar`** and **`AppAnimatedCounter`** ease between simulated steps
+  so trip, order, and parcel progress never jumps.
+- Page transitions use one forward fade-slide on Android and desktop; iOS and
+  macOS keep the Cupertino transition so swipe-back still works. Scrolling uses
+  a single physics everywhere.
+
+Two rules are enforced by `test/core/widgets/app_motion_test.dart`:
+
+1. Every effect is a finite one-shot that releases its ticker, so screens stay
+   smooth and always reach a stable frame.
+2. **Reduced motion is honoured structurally.** When it is on, an effect is not
+   played slowly: it is not created at all, and the content renders on its
+   settled frame. A control still taps, and content is never hidden behind an
+   animation that will not run.
+
+The reduced-motion preference is respected from the OS setting and can also be
+toggled in **Profile → Settings**, where it persists across launches.
 
 ## Quick start
 1. Install the Flutter stable SDK and verify `flutter doctor`.
@@ -44,14 +102,20 @@ dart format .
 flutter analyze
 flutter test
 ```
-The suite covers fare and promo rules, fixture integrity, simulation generation tokens and stale-timer rejection, each journey flow end to end, real tap-through navigation, and layout checks at 1.0x and 1.3x text scale with reduced motion enabled.
-Current status: **123 tests passing, `flutter analyze` clean.**
+The suite covers fare and promo rules, fixture integrity, simulation generation tokens and stale-timer rejection, each journey flow end to end, real tap-through navigation, the motion primitives, and layout checks at 1.0x and 1.3x text scale with reduced motion enabled.
+Current status: **173 tests passing, `flutter analyze` clean.**
 
 ## Build
 - Android debug: `flutter build apk --debug`
 - Android release: `flutter build apk --release`
 - Android App Bundle (Play): `flutter build appbundle --release`
+- Web release: `flutter build web --release`
 - iOS release (macOS): `flutter build ipa --release`
+
+The live preview is built with
+`flutter build web --release --base-href /GoMotion/` and published from the
+`gh-pages` branch. To capture the README gallery again, serve that build at a
+`/GoMotion/` path and run `node tool/capture_screenshots.mjs --url <url>`.
 
 Release signing is read from `android/key.properties`, which is git-ignored.
 Copy `android/key.properties.example`, create a keystore, and fill in the values
@@ -66,7 +130,8 @@ before shipping.
 ```
 lib/
   app/          # app root, router, theme, providers
-  core/         # constants, widgets, navigation, feedback, errors
+  core/         # constants, widgets (incl. app_motion.dart), navigation,
+                # feedback, errors
   data/         # fixture loading and local preferences
   domain/       # entities, fare rules, repository contracts
   features/     # home, destination, ride, food, send, activity,
@@ -75,15 +140,23 @@ lib/
 assets/
   data/         # nine JSON fixtures
   images/       # original bundled artwork
-docs/           # product, design, architecture, QA specifications
+  mascot/       # drop-in slot for the brand character (code-drawn by default)
+screenshots/    # README gallery, captured from the release web build
+tool/           # development tooling (screenshot capture)
+test/           # unit, widget, integration, and accessibility tests
 ```
 
-## Documentation map
-See `docs/` for product, design, architecture, data, simulation, privacy, testing, and roadmap specifications. See `prompts/` for coding-agent task prompts. See `AGENTS.md` for mandatory implementation constraints.
+## Documentation
+This repository publishes the app and this README. The full handover
+documentation — product, design system, architecture, data model, simulation
+engine, offline strategy, UI/UX guidelines, and the acceptance checklist — is
+kept alongside the source in the working copy and is intentionally not
+published here.
 
 ## Known limitations
 - Fictional simulation only: no real drivers, restaurants, parcels, or payments.
 - Activity and wallets are held in memory for the session; only simple preferences persist.
+- The brand character is drawn in code (`MascotAssets.bundled = false`) so no bitmap pose ships with the repo; dropping PNGs into `assets/mascot/` and flipping that flag swaps in real artwork.
 - iOS release build is unverified in this environment (no macOS/Xcode).
 - Release output uses the debug keystore until `android/key.properties` is provided.
 

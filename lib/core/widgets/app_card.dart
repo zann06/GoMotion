@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../constants/app_colors.dart';
 import '../constants/app_spacing.dart';
 import '../constants/app_typography.dart';
+import 'app_motion.dart';
 
 /// A white surface card with a hairline border and subtle shadow.
 ///
@@ -54,22 +55,23 @@ class AppCard extends StatelessWidget {
         border: Border.all(color: effectiveBorder, width: selected ? 1.8 : 1),
         boxShadow: selected ? null : AppShadows.card,
       ),
-      // A transparent Material gives descendants such as ListTile and InkWell
-      // a surface for ink effects on top of the decorated card.
+      // A transparent Material gives descendants such as ListTile a surface for
+      // ink effects on top of the decorated card.
       child: Material(
         type: MaterialType.transparency,
-        child: onTap == null
-            ? Padding(padding: padding, child: child)
-            : InkWell(
-                borderRadius: radius,
-                onTap: onTap,
-                child: Padding(padding: padding, child: child),
-              ),
+        child: Padding(padding: padding, child: child),
       ),
     );
 
+    // The theme disables ink splashes, so an interactive card answers a press
+    // with a short scale instead. The feedback wraps the whole surface, so the
+    // border and shadow move with it.
+    final surface = onTap == null
+        ? content
+        : AppPressFeedback(onTap: onTap!, child: content);
+
     if (onTap == null) {
-      return Semantics(label: semanticLabel, container: true, child: content);
+      return Semantics(label: semanticLabel, container: true, child: surface);
     }
 
     return Semantics(
@@ -78,7 +80,7 @@ class AppCard extends StatelessWidget {
       selected: selected,
       container: true,
       excludeSemantics: semanticLabel != null,
-      child: content,
+      child: surface,
     );
   }
 }
