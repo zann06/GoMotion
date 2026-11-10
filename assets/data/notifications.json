@@ -1,0 +1,52 @@
+[
+  {
+    "id": "ntf_welcome",
+    "kind": "system",
+    "title": "GoMotion demo is ready",
+    "body": "Everything in this inbox is generated from bundled sample data. No account, message, or network request is involved.",
+    "time_label": "Just now",
+    "read": false,
+    "action_label": "Read the demo notes",
+    "action_route": "/about"
+  },
+  {
+    "id": "ntf_promo_move10",
+    "kind": "promo",
+    "title": "MOVE10 applies to your next ride",
+    "body": "A fictional 10% discount on demo fares above Rp 10.000. Pick it on the vehicle list or the review screen.",
+    "time_label": "12 min ago",
+    "read": false,
+    "action_label": "Plan a ride",
+    "action_route": "/destination/search"
+  },
+  {
+    "id": "ntf_food_kitchen",
+    "kind": "promo",
+    "title": "The demo kitchen is open",
+    "body": "Three fictional restaurants are bundled with the app, along with their menus and demo prices.",
+    "time_label": "1 hour ago",
+    "read": false,
+    "action_label": "Open GoFood",
+    "action_route": "/food"
+  },
+  {
+    "id": "ntf_send_parcel",
+    "kind": "order",
+    "title": "GoSend keeps parcels on device",
+    "body": "Sender, recipient, and package details never leave this device. The courier and every scan are simulated.",
+    "time_label": "3 hours ago",
+    "read": true,
+    "action_label": "Open GoSend",
+    "action_route": "/send"
+  },
+  {
+    "id": "ntf_rating_tip",
+    "kind": "order",
+    "title": "Rate a journey to earn demo points",
+    "body": "Completed rides, orders, and parcels can be rated once from the Orders tab. Each rating adds fictional points to the demo wallet.",
+    "time_label": "Yesterday",
+    "read": true,
+    "action_label": null,
+    "action_route": null
+  }
+]

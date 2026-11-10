@@ -1,4 +1,5 @@
 import '../entities/fixtures.dart';
+import '../entities/inbox_message.dart';
 
 /// Read-only access to the bundled, immutable demo dataset.
 ///
@@ -26,6 +27,7 @@ final class FixtureBundle {
     required this.menuItems,
     required this.deliveryOptions,
     required this.rewards,
+    required this.notifications,
     required this.demoUser,
   });
 
@@ -37,6 +39,10 @@ final class FixtureBundle {
   final List<MenuItem> menuItems;
   final List<DeliveryOption> deliveryOptions;
   final List<Reward> rewards;
+
+  /// Seeded inbox messages, newest first as authored in the fixture.
+  final List<InboxMessage> notifications;
+
   final DemoUser demoUser;
 
   late final Map<String, Location> _locationsById = {

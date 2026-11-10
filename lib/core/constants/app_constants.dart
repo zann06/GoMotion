@@ -6,7 +6,7 @@
 abstract final class AppInfo {
   static const String name = 'GoMotion';
   static const String tagline = 'Move smarter. Feel every journey.';
-  static const String version = '0.5.0';
+  static const String version = '0.6.0';
 
   /// Shown in About GoMotion and settings.
   static const String offlineNotice =
@@ -51,6 +51,7 @@ abstract final class FixtureFiles {
   static const String menuItems = 'assets/data/menu_items.json';
   static const String deliveryOptions = 'assets/data/delivery_options.json';
   static const String rewards = 'assets/data/rewards.json';
+  static const String notifications = 'assets/data/notifications.json';
   static const String demoUser = 'assets/data/demo_user.json';
 }
 

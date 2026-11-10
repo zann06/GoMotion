@@ -32,11 +32,18 @@ class AppBottomNav extends StatelessWidget {
   const AppBottomNav({
     required this.currentIndex,
     required this.onSelected,
+    this.badges = const {},
     super.key,
   });
 
   final int currentIndex;
   final ValueChanged<int> onSelected;
+
+  /// Optional unread counts keyed by destination index.
+  ///
+  /// A missing or zero entry renders no badge, so a tab never shows a
+  /// meaningless "0".
+  final Map<int, int> badges;
 
   static const List<NavDestination> destinations = [
     NavDestination(
@@ -45,14 +52,19 @@ class AppBottomNav extends StatelessWidget {
       activeIcon: AppIcons.home,
     ),
     NavDestination(
-      label: 'Activity',
+      label: 'Food',
+      icon: Icons.restaurant_outlined,
+      activeIcon: AppIcons.food,
+    ),
+    NavDestination(
+      label: 'Orders',
       icon: Icons.receipt_long_outlined,
       activeIcon: AppIcons.activity,
     ),
     NavDestination(
-      label: 'Rewards',
-      icon: Icons.workspace_premium_outlined,
-      activeIcon: AppIcons.rewards,
+      label: 'Inbox',
+      icon: Icons.notifications_none_rounded,
+      activeIcon: Icons.notifications_rounded,
     ),
     NavDestination(
       label: 'Profile',
@@ -79,6 +91,7 @@ class AppBottomNav extends StatelessWidget {
                   child: _NavItem(
                     destination: destination,
                     selected: index == currentIndex,
+                    badge: badges[index] ?? 0,
                     onTap: () => onSelected(index),
                   ),
                 ),
@@ -95,11 +108,15 @@ class _NavItem extends ConsumerStatefulWidget {
     required this.destination,
     required this.selected,
     required this.onTap,
+    this.badge = 0,
   });
 
   final NavDestination destination;
   final bool selected;
   final VoidCallback onTap;
+
+  /// Unread count rendered on the icon; zero hides the badge.
+  final int badge;
 
   @override
   ConsumerState<_NavItem> createState() => _NavItemState();
@@ -118,7 +135,9 @@ class _NavItemState extends ConsumerState<_NavItem> {
     return Semantics(
       button: true,
       selected: widget.selected,
-      label: widget.destination.label,
+      label: widget.badge > 0
+          ? '${widget.destination.label}, ${widget.badge} unread'
+          : widget.destination.label,
       excludeSemantics: true,
       child: GestureDetector(
         behavior: HitTestBehavior.opaque,
@@ -151,12 +170,46 @@ class _NavItemState extends ConsumerState<_NavItem> {
                       : Colors.transparent,
                   borderRadius: AppRadius.chip,
                 ),
-                child: Icon(
-                  widget.selected
-                      ? widget.destination.activeIcon
-                      : widget.destination.icon,
-                  size: 22,
-                  color: color,
+                child: Stack(
+                  clipBehavior: Clip.none,
+                  alignment: Alignment.center,
+                  children: [
+                    Icon(
+                      widget.selected
+                          ? widget.destination.activeIcon
+                          : widget.destination.icon,
+                      size: 22,
+                      color: color,
+                    ),
+                    if (widget.badge > 0)
+                      Positioned(
+                        top: -3,
+                        right: -10,
+                        child: Container(
+                          constraints: const BoxConstraints(minWidth: 16),
+                          height: 16,
+                          padding: const EdgeInsets.symmetric(horizontal: 3),
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                            color: AppColors.primaryIndigo,
+                            borderRadius: AppRadius.chip,
+                            border: Border.all(
+                              color: AppColors.white,
+                              width: 1.5,
+                            ),
+                          ),
+                          child: Text(
+                            widget.badge > 9 ? '9+' : '${widget.badge}',
+                            style: AppTypography.caption.copyWith(
+                              color: AppColors.white,
+                              fontWeight: FontWeight.w800,
+                              fontSize: 9,
+                              height: 1,
+                            ),
+                          ),
+                        ),
+                      ),
+                  ],
                 ),
               ),
               const SizedBox(height: 3),

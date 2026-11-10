@@ -90,15 +90,38 @@ void main() {
   ) async {
     await pumpApp(tester);
 
-    await tester.tap(find.text('Activity'));
-    await tester.pumpAndSettle();
-    expect(find.text('Your activity'), findsOneWidget);
+    // Five tabs, ordered like the reference board.
+    expect(AppBottomNav.destinations.length, 5);
+    expect(AppBottomNav.destinations.map((d) => d.label).toList(), [
+      'Home',
+      'Food',
+      'Orders',
+      'Inbox',
+      'Profile',
+    ]);
 
-    await tester.tap(find.text('Rewards'));
-    await tester.pumpAndSettle();
-    expect(find.text('Rewards'), findsWidgets);
+    // Scoped to the bar: "Food" also labels a home shortcut.
+    Finder navTab(String label) => find.descendant(
+      of: find.byType(AppBottomNav),
+      matching: find.text(label),
+    );
 
-    await tester.tap(find.text('Profile'));
+    await tester.tap(navTab('Food'));
+    await tester.pumpAndSettle();
+    expect(find.text('GoFood'), findsOneWidget);
+
+    await tester.tap(navTab('Orders'));
+    await tester.pumpAndSettle();
+    expect(
+      find.text('Your simulated rides, food orders, and parcels'),
+      findsOneWidget,
+    );
+
+    await tester.tap(navTab('Inbox'));
+    await tester.pumpAndSettle();
+    expect(find.text('GoMotion demo is ready'), findsOneWidget);
+
+    await tester.tap(navTab('Profile'));
     await tester.pumpAndSettle();
     expect(find.text('Your profile'), findsOneWidget);
   });
@@ -108,7 +131,8 @@ void main() {
 
     expect(find.text('Explore services'), findsOneWidget);
     expect(find.text('Ride'), findsOneWidget);
-    expect(find.text('Food'), findsOneWidget);
+    // "Food" is also a tab label, so the shortcut is matched loosely.
+    expect(find.text('Food'), findsWidgets);
     expect(find.text('Send'), findsOneWidget);
   });
 

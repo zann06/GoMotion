@@ -323,8 +323,16 @@ class _ServiceShortcuts extends ConsumerWidget {
         icon: AppIcons.food,
         color: AppColors.electricBlue,
         badge: unratedFor(ActivityKind.food),
-        onTap: () =>
-            context.push(locationFor(ActiveJourneyKind.food, AppRoutes.food)),
+        // Food is a shell tab, so opening it switches tabs rather than pushing
+        // a duplicate copy of the browse screen on the root navigator. A live
+        // order still resumes on top, because that flow is full screen.
+        onTap: () {
+          if (active?.kind == ActiveJourneyKind.food) {
+            context.push(active!.location);
+          } else {
+            context.goNamed(AppRoutes.foodName);
+          }
+        },
       ),
       _Service(
         label: 'Send',

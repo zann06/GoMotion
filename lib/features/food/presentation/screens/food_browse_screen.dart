@@ -36,9 +36,6 @@ class _FoodBrowseScreenState extends ConsumerState<FoodBrowseScreen> {
     return AppPage(
       title: 'GoFood',
       subtitle: 'Order from fictional demo restaurants',
-      leading: AppBackButton(
-        onPressed: () => context.goNamed(AppRoutes.homeName),
-      ),
       actions: [
         if (cartCount > 0)
           Semantics(

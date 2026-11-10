@@ -10,6 +10,10 @@ abstract final class AppRoutes {
   static const String activity = '/activity';
   static const String activityName = 'activity';
 
+  /// The simulated inbox tab.
+  static const String inbox = '/inbox';
+  static const String inboxName = 'inbox';
+
   static const String rewards = '/rewards';
   static const String rewardsName = 'rewards';
 
@@ -103,9 +107,13 @@ abstract final class AppRoutes {
 }
 
 /// Tab indices of the primary shell destinations, in display order.
+///
+/// Matches the reference board: Home, Food, Orders, Inbox, Profile. Rewards is
+/// still a route, but it is reached from Profile rather than from the bar.
 abstract final class ShellTab {
   static const int home = 0;
-  static const int activity = 1;
-  static const int rewards = 2;
-  static const int profile = 3;
+  static const int food = 1;
+  static const int orders = 2;
+  static const int inbox = 3;
+  static const int profile = 4;
 }

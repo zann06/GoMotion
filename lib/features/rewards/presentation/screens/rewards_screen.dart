@@ -73,6 +73,8 @@ class RewardsScreen extends ConsumerWidget {
     return AppPage(
       title: 'Rewards',
       subtitle: 'Fictional demo points and badges',
+      // Reached from Profile rather than the tab bar, so it needs a way back.
+      leading: const AppBackButton(),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [

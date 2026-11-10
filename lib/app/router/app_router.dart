@@ -12,6 +12,7 @@ import '../../features/food/presentation/screens/food_receipt_screen.dart';
 import '../../features/food/presentation/screens/food_restaurant_screen.dart';
 import '../../features/food/presentation/screens/food_tracking_screen.dart';
 import '../../features/home/presentation/screens/home_screen.dart';
+import '../../features/inbox/presentation/screens/inbox_screen.dart';
 import '../../features/onboarding/presentation/screens/onboarding_screen.dart';
 import '../../features/profile/presentation/screens/profile_screen.dart';
 import '../../features/profile/presentation/screens/saved_places_screen.dart';
@@ -68,7 +69,17 @@ GoRouter buildRouter({
               ),
             ],
           ),
-          // Activity
+          // Food
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: AppRoutes.food,
+                name: AppRoutes.foodName,
+                builder: (context, state) => const FoodBrowseScreen(),
+              ),
+            ],
+          ),
+          // Orders (the journey history, previously the Activity tab)
           StatefulShellBranch(
             routes: [
               GoRoute(
@@ -88,13 +99,13 @@ GoRouter buildRouter({
               ),
             ],
           ),
-          // Rewards
+          // Inbox
           StatefulShellBranch(
             routes: [
               GoRoute(
-                path: AppRoutes.rewards,
-                name: AppRoutes.rewardsName,
-                builder: (context, state) => const RewardsScreen(),
+                path: AppRoutes.inbox,
+                name: AppRoutes.inboxName,
+                builder: (context, state) => const InboxScreen(),
               ),
             ],
           ),
@@ -152,12 +163,9 @@ GoRouter buildRouter({
         name: AppRoutes.rideReceiptName,
         builder: (context, state) => const RideReceiptScreen(),
       ),
-      // GoFood
-      GoRoute(
-        path: AppRoutes.food,
-        name: AppRoutes.foodName,
-        builder: (context, state) => const FoodBrowseScreen(),
-      ),
+      // GoFood sub-screens stay full-screen: the restaurant, cart, checkout, and
+      // tracking views own their own headers and sticky footers, so they are not
+      // constrained by the tab bar. The browse root is the Food branch above.
       GoRoute(
         path: AppRoutes.foodRestaurant,
         name: AppRoutes.foodRestaurantName,
@@ -207,6 +215,11 @@ GoRouter buildRouter({
         builder: (context, state) => const SendReceiptScreen(),
       ),
       // Profile, rewards, and settings surfaces.
+      GoRoute(
+        path: AppRoutes.rewards,
+        name: AppRoutes.rewardsName,
+        builder: (context, state) => const RewardsScreen(),
+      ),
       GoRoute(
         path: AppRoutes.savedPlaces,
         name: AppRoutes.savedPlacesName,

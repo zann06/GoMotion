@@ -7,6 +7,7 @@ import 'package:gomotion/app/providers/reduced_motion_provider.dart';
 import 'package:gomotion/core/constants/app_constants.dart';
 import 'package:gomotion/core/constants/app_icons.dart';
 import 'package:gomotion/core/navigation/app_routes.dart';
+import 'package:gomotion/core/widgets/app_bottom_nav.dart';
 import 'package:gomotion/core/widgets/schematic_map.dart';
 import 'package:gomotion/data/preferences/preferences_store.dart';
 import 'package:gomotion/simulation/fake_simulation_clock.dart';
@@ -227,7 +228,7 @@ void main() {
     await pumpApp(tester, AppRoutes.activity);
     await tester.pumpAndSettle();
 
-    expect(find.text('Your activity'), findsOneWidget);
+    expect(find.text('Orders'), findsWidgets);
     expect(find.text('No demo journeys yet'), findsOneWidget);
   });
 
@@ -312,5 +313,69 @@ void main() {
     // At the start of the trip the badge reports the whole remaining leg.
     expect(find.textContaining('min'), findsWidgets);
     expect(find.textContaining('km left'), findsOneWidget);
+  });
+
+  testWidgets('the inbox tab badges the unread fixture count', (tester) async {
+    await pumpApp(tester, AppRoutes.home);
+
+    // Three of the five seeded messages start unread.
+    expect(find.widgetWithText(AppBottomNav, '3'), findsOneWidget);
+
+    await tester.tap(find.text('Inbox'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('GoMotion demo is ready'), findsOneWidget);
+    expect(find.textContaining('Mark all read'), findsOneWidget);
+
+    await tester.tap(find.textContaining('Mark all read'));
+    await tester.pumpAndSettle();
+
+    // Reading everything clears both the row action and the tab badge.
+    expect(find.textContaining('Mark all read'), findsNothing);
+    expect(find.widgetWithText(AppBottomNav, '3'), findsNothing);
+  });
+
+  testWidgets('inbox filters narrow the list without hiding the badge', (
+    tester,
+  ) async {
+    await pumpApp(tester, AppRoutes.inbox);
+    await tester.pumpAndSettle();
+
+    expect(find.text('MOVE10 applies to your next ride'), findsOneWidget);
+    expect(find.text('GoSend keeps parcels on device'), findsOneWidget);
+
+    await tester.tap(find.text('Promos'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('MOVE10 applies to your next ride'), findsOneWidget);
+    expect(find.text('GoSend keeps parcels on device'), findsNothing);
+    // The badge counts the whole inbox, not the filtered view.
+    expect(find.widgetWithText(AppBottomNav, '3'), findsOneWidget);
+  });
+
+  testWidgets('inbox actions open a local screen and mark the message read', (
+    tester,
+  ) async {
+    await pumpApp(tester, AppRoutes.inbox);
+    await tester.pumpAndSettle();
+
+    await tester.ensureVisible(find.text('Open GoSend'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Open GoSend'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('GoSend'), findsWidgets);
+  });
+
+  testWidgets('rewards is reached from the profile instead of the tab bar', (
+    tester,
+  ) async {
+    await pumpApp(tester, AppRoutes.profile);
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Rewards'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Fictional demo points and badges'), findsOneWidget);
   });
 }

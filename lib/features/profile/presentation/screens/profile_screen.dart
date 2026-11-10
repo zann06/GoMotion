@@ -145,6 +145,27 @@ class ProfileScreen extends ConsumerWidget {
                 ),
               ),
               const SizedBox(height: AppSpacing.lg),
+              const SectionHeader(title: 'Demo rewards'),
+              const SizedBox(height: AppSpacing.xs),
+              AppCard(
+                padding: const EdgeInsets.symmetric(vertical: AppSpacing.xs),
+                child: SelectionRow(
+                  title: 'Rewards',
+                  subtitle: 'Fictional badges for demo milestones',
+                  leading: const IconWell(
+                    icon: Icons.workspace_premium_rounded,
+                    background: AppColors.blueTint,
+                    foreground: AppColors.electricBlue,
+                  ),
+                  trailing: const Icon(
+                    Icons.chevron_right_rounded,
+                    size: 20,
+                    color: AppColors.neutralGray,
+                  ),
+                  onTap: () => context.pushNamed(AppRoutes.rewardsName),
+                ),
+              ),
+              const SizedBox(height: AppSpacing.lg),
               const SectionHeader(title: 'Demo settings'),
               const SizedBox(height: AppSpacing.xs),
               AppCard(

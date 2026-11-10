@@ -53,11 +53,42 @@ const SHOTS = [
   { file: '05-gofood.png', route: '/food', settle: 1400, note: 'GoFood browse' },
   { file: '06-gofood-menu.png', route: '/food/restaurant/rest_nori', settle: 1400, note: 'GoFood restaurant menu' },
   { file: '07-gosend.png', route: '/send', settle: 1200, note: 'GoSend form' },
-  { file: '08-activity.png', route: '/activity', settle: 1000, note: 'activity empty state' },
+  { file: '08-orders.png', route: '/activity', settle: 1000, note: 'orders empty state' },
   { file: '09-rewards.png', route: '/rewards', settle: 1000, note: 'rewards catalogue' },
   { file: '10-profile.png', route: '/profile', settle: 1000, note: 'profile' },
   { file: '11-settings.png', route: '/settings', settle: 1000, note: 'settings' },
   { file: '12-about.png', route: '/about', settle: 1000, note: 'about / offline disclosure' },
+  { file: '13-inbox.png', route: '/inbox', settle: 1200, note: 'demo inbox' },
+  {
+    file: '14-ride-vehicle.png',
+    route: '/destination/search',
+    settle: 1000,
+    note: 'ride vehicle selection',
+    steps: [{ click: 'City Station' }, { wait: 1500 }],
+  },
+  {
+    file: '15-ride-tracking.png',
+    route: '/destination/search',
+    settle: 1000,
+    note: 'live ride tracking',
+    // The booking flow cannot be reached by URL: it needs a chosen destination,
+    // a chosen vehicle, and the simulated matching window. The labels below are
+    // the same ones a person taps; a moved button fails loudly instead of
+    // capturing the wrong screen.
+    steps: [
+      { click: 'City Station' },
+      { wait: 1500 },
+      { click: 'GoCar Premium' },
+      { wait: 1200 },
+      { click: 'Review Rp' },
+      { wait: 1800 },
+      { click: 'Confirm demo booking' },
+      // 4s matching + 8s driver approach, then a margin for transitions.
+      { wait: 16000 },
+      { click: 'Confirm pickup' },
+      { wait: 3000 },
+    ],
+  },
 ];
 
 const CHROME_CANDIDATES = [
@@ -92,6 +123,73 @@ function findChrome() {
 }
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+/** Turns on Flutter's semantics tree so labels can be found in the DOM. */
+async function enableSemantics(client) {
+  await client.send('Runtime.evaluate', {
+    expression:
+      "(() => { const placeholder = document.querySelector('flt-semantics-placeholder'); if (!placeholder) return false; placeholder.click(); return true; })()",
+    returnByValue: true,
+  });
+  await sleep(1200);
+}
+
+/**
+ * Clicks the smallest visible semantics node whose label contains [text].
+ *
+ * The ride shots need a few interactions (choose destination, vehicle, book)
+ * that cannot be expressed as a route, so the script follows the same labels a
+ * person would tap.
+ */
+async function clickSemantics(client, text) {
+  const { result } = await client.send('Runtime.evaluate', {
+    expression: `(() => {
+      const want = ${JSON.stringify(text)};
+      let best = null;
+      for (const node of document.querySelectorAll('flt-semantics')) {
+        const label = node.getAttribute('aria-label') || node.textContent || '';
+        if (!label.includes(want)) continue;
+        const rect = node.getBoundingClientRect();
+        if (rect.width < 4 || rect.height < 4) continue;
+        if (rect.y < -50 || rect.y > innerHeight + 50) continue;
+        if (!best || rect.width * rect.height < best.width * best.height) {
+          best = {
+            x: Math.round(rect.x + rect.width / 2),
+            y: Math.round(rect.y + rect.height / 2),
+            width: rect.width,
+            height: rect.height,
+          };
+        }
+      }
+      return best;
+    })()`,
+    returnByValue: true,
+  });
+  const hit = result.value;
+  if (!hit) throw new Error(`No visible semantics node matched "${text}".`);
+  await client.send('Input.dispatchMouseEvent', {
+    type: 'mouseMoved',
+    x: hit.x,
+    y: hit.y,
+    button: 'none',
+    clickCount: 0,
+  });
+  await client.send('Input.dispatchMouseEvent', {
+    type: 'mousePressed',
+    x: hit.x,
+    y: hit.y,
+    button: 'left',
+    clickCount: 1,
+  });
+  await client.send('Input.dispatchMouseEvent', {
+    type: 'mouseReleased',
+    x: hit.x,
+    y: hit.y,
+    button: 'left',
+    clickCount: 1,
+  });
+  await sleep(1200);
+}
 
 /** Minimal DevTools-protocol client over the page target's WebSocket. */
 async function connect(port) {
@@ -213,6 +311,13 @@ async function main() {
         returnByValue: true,
       });
       await sleep(shot.settle);
+      for (const step of shot.steps ?? []) {
+        if (step.wait) await sleep(step.wait);
+        if (step.click) {
+          await enableSemantics(client);
+          await clickSemantics(client, step.click);
+        }
+      }
       const { data } = await client.send('Page.captureScreenshot', {
         format: 'png',
         captureBeyondViewport: false,

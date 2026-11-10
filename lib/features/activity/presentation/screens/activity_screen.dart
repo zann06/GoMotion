@@ -37,8 +37,8 @@ class _ActivityScreenState extends ConsumerState<ActivityScreen> {
     final all = ref.watch(activityProvider);
 
     return AppPage(
-      title: 'Your activity',
-      subtitle: 'A history of simulated journeys',
+      title: 'Orders',
+      subtitle: 'Your simulated rides, food orders, and parcels',
       body: all.isEmpty
           ? EmptyStateBody(
               icon: Icons.receipt_long_outlined,

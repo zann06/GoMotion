@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/errors/app_failure.dart';
 import '../../domain/entities/fixtures.dart';
+import '../../domain/entities/inbox_message.dart';
 import '../../domain/repositories/fixture_repository.dart';
 
 /// Loads GoMotion fixtures from bundled assets and validates integrity.
@@ -35,6 +36,10 @@ final class JsonFixtureRepository implements FixtureRepository {
         _parseDeliveryOption,
       ),
       rewards: await _readList(FixtureFiles.rewards, _parseReward),
+      notifications: await _readList(
+        FixtureFiles.notifications,
+        _parseNotification,
+      ),
       demoUser: await _readObject(FixtureFiles.demoUser, _parseDemoUser),
     );
 
@@ -133,6 +138,10 @@ final class JsonFixtureRepository implements FixtureRepository {
       bundle.deliveryOptions.map((d) => d.id),
     );
     requireUnique(FixtureFiles.rewards, bundle.rewards.map((r) => r.id));
+    requireUnique(
+      FixtureFiles.notifications,
+      bundle.notifications.map((n) => n.id),
+    );
 
     final vehicleIds = bundle.vehicles.map((v) => v.id).toSet();
     final locationIds = bundle.locations.map((l) => l.id).toSet();
@@ -278,6 +287,19 @@ final class JsonFixtureRepository implements FixtureRepository {
     );
   }
 
+  InboxMessage _parseNotification(Map<String, Object?> json) {
+    return InboxMessage(
+      id: _str(json, 'id'),
+      kind: InboxKind.fromFixture(_str(json, 'kind')),
+      title: _str(json, 'title'),
+      body: _str(json, 'body'),
+      timeLabel: _str(json, 'time_label'),
+      read: _bool(json, 'read'),
+      actionLabel: _strOrNull(json, 'action_label'),
+      actionRoute: _strOrNull(json, 'action_route'),
+    );
+  }
+
   DemoUser _parseDemoUser(Map<String, Object?> json) {
     return DemoUser(
       id: _str(json, 'id'),
@@ -308,6 +330,15 @@ final class JsonFixtureRepository implements FixtureRepository {
   String _strOr(Map<String, Object?> json, String key, String orElse) {
     final value = json[key];
     return value is String && value.isNotEmpty ? value : orElse;
+  }
+
+  /// Reads a genuinely optional string, returning null when absent or blank.
+  ///
+  /// Used by fixtures whose fields are nullable by design, such as a simulated
+  /// inbox message without a call to action.
+  String? _strOrNull(Map<String, Object?> json, String key) {
+    final value = json[key];
+    return value is String && value.isNotEmpty ? value : null;
   }
 
   int _int(Map<String, Object?> json, String key) {
