@@ -1,0 +1,20 @@
+[
+  {
+    "id": "promo_welcome",
+    "code": "MOVE10",
+    "title": "Welcome ride discount",
+    "discount_type": "percent",
+    "discount_value": 10,
+    "minimum_fare": 10000,
+    "active": true
+  },
+  {
+    "id": "promo_flat",
+    "code": "FIRST5",
+    "title": "First demo order",
+    "discount_type": "fixed",
+    "discount_value": 5000,
+    "minimum_fare": 20000,
+    "active": true
+  }
+]

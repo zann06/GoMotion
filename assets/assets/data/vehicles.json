@@ -1,0 +1,32 @@
+[
+  {
+    "id": "veh_ride",
+    "category": "GoRide",
+    "label": "GoRide",
+    "capacity": 1,
+    "base_fare": 8000,
+    "per_km_fare": 2200,
+    "estimated_minutes": 5,
+    "plate": "B 4129 MR"
+  },
+  {
+    "id": "veh_car",
+    "category": "GoCar",
+    "label": "GoCar",
+    "capacity": 4,
+    "base_fare": 15000,
+    "per_km_fare": 4200,
+    "estimated_minutes": 7,
+    "plate": "B 2847 GM"
+  },
+  {
+    "id": "veh_premium",
+    "category": "GoCar Premium",
+    "label": "GoCar Premium",
+    "capacity": 4,
+    "base_fare": 25000,
+    "per_km_fare": 6000,
+    "estimated_minutes": 9,
+    "plate": "B 8802 PR"
+  }
+]

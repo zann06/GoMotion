@@ -1,0 +1,29 @@
+[
+  {
+    "id": "drv_001",
+    "display_name": "Ari Pratama",
+    "rating": 4.9,
+    "completed_demo_trips": 128,
+    "vehicle_id": "veh_ride",
+    "avatar_asset": "driver_ari.png",
+    "seed_order": 1
+  },
+  {
+    "id": "drv_002",
+    "display_name": "Nadia Putri",
+    "rating": 4.8,
+    "completed_demo_trips": 96,
+    "vehicle_id": "veh_car",
+    "avatar_asset": "driver_nadia.png",
+    "seed_order": 2
+  },
+  {
+    "id": "drv_003",
+    "display_name": "Raka Wijaya",
+    "rating": 5.0,
+    "completed_demo_trips": 214,
+    "vehicle_id": "veh_premium",
+    "avatar_asset": "driver_raka.png",
+    "seed_order": 3
+  }
+]

@@ -1,0 +1,18 @@
+[
+  {
+    "id": "del_ride",
+    "service_type": "GoSend",
+    "label": "Same-day demo delivery",
+    "base_fee": 10000,
+    "per_km_fee": 1800,
+    "eta_label": "35–50 min"
+  },
+  {
+    "id": "del_food",
+    "service_type": "GoFood",
+    "label": "Food courier",
+    "base_fee": 7000,
+    "per_km_fee": 1200,
+    "eta_label": "20–35 min"
+  }
+]

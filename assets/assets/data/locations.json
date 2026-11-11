@@ -1,0 +1,47 @@
+[
+  {
+    "id": "loc_home",
+    "name": "Home",
+    "address_label": "Jl. Melati No. 12 · Demo District",
+    "category": "saved",
+    "map_x": 0.18,
+    "map_y": 0.72,
+    "popularity": 1
+  },
+  {
+    "id": "loc_campus",
+    "name": "Campus Hub",
+    "address_label": "Innovation Avenue · Demo District",
+    "category": "education",
+    "map_x": 0.72,
+    "map_y": 0.28,
+    "popularity": 98
+  },
+  {
+    "id": "loc_mall",
+    "name": "Central Plaza",
+    "address_label": "Main Boulevard · Demo District",
+    "category": "shopping",
+    "map_x": 0.55,
+    "map_y": 0.52,
+    "popularity": 87
+  },
+  {
+    "id": "loc_station",
+    "name": "City Station",
+    "address_label": "Transit Road · Demo District",
+    "category": "transit",
+    "map_x": 0.83,
+    "map_y": 0.68,
+    "popularity": 74
+  },
+  {
+    "id": "loc_park",
+    "name": "Riverside Park",
+    "address_label": "Riverwalk · Demo District",
+    "category": "leisure",
+    "map_x": 0.25,
+    "map_y": 0.2,
+    "popularity": 62
+  }
+]
