@@ -4,7 +4,7 @@
 
 [![Platform](https://img.shields.io/badge/platform-android%20%7C%20ios%20%7C%20web-2563EB?style=flat-square)](https://flutter.dev)
 [![Runtime](https://img.shields.io/badge/runtime-100%25%20offline-16A34A?style=flat-square)](#offline-guarantees)
-[![Tests](https://img.shields.io/badge/tests-192%20passing-16A34A?style=flat-square)](#quality-gates)
+[![Tests](https://img.shields.io/badge/tests-209%20passing-16A34A?style=flat-square)](#quality-gates)
 [![License](https://img.shields.io/badge/license-MIT-0E2A6E?style=flat-square)](LICENSE)
 
 GoMotion is an offline-first, fictional ride-hailing experience simulator for
@@ -56,7 +56,7 @@ reached from Profile.
 | Service | Flow |
 | --- | --- |
 | **GoRide / GoCar / GoCar Premium** | Search a demo destination, compare simulated fares, apply a demo promo, book, watch a seeded driver match, confirm pickup, track the trip, pay from the fictional wallet or cash, then rate and review the receipt. |
-| **GoFood** | Browse fictional restaurants, filter by category, build a cart, check out, track the simulated courier, and view the receipt. |
+| **GoFood** | Search fictional restaurants by name, filter by the fixed All / Asian / Western / Local / Dessert categories, expand the full list with "See all", build a cart, check out, track the simulated courier, and view the receipt. |
 | **GoSend** | Fill in sender, recipient, and package details, review the quote, follow the courier, and view the delivery receipt. |
 | **Orders** | A session ledger of every completed demo journey, with kind filters and a detail view per record. |
 | **Inbox** | Five seeded demo messages with kind filters, per-message read state, a "mark all read" action, and an unread badge on the tab. Every action opens another local screen. |
@@ -80,7 +80,7 @@ The identity is drawn, not bundled: no image asset, no icon font, no copied
 operator artwork.
 
 - **The mark** ([`lib/core/widgets/app_mark_painter.dart`](lib/core/widgets/app_mark_painter.dart)) is the **G** from the identity reference, traced as one closed outline rather than approximated from arcs: the reference glyph's connected component was boundary-traced and simplified to 33 vertices, so the drawn mark and the identity assets are the same shape. `GoMotionMarkPainter` is the single source of truth — [`app_logo.dart`](lib/core/widgets/app_logo.dart) composes it into `AppBrandLockup`, `AppSplashSignature`, and `AppLogoChip`, and the mascot reuses it for its helmet and chest decals. One geometry therefore stays crisp from a 20px row to the 132px splash signature to the app icon, with no bundled art and no network.
-- **The mascot** ([`lib/core/widgets/mascot_art.dart`](lib/core/widgets/mascot_art.dart)) is one rider character in an anime-illustration style — glossy deep-blue helmet with a violet visor flipped up onto the brow and a white G decal, dark-navy layered hair with a rim light and a fringe visible under the brim, royal-blue jacket with a chest flash and G + "GoMotion" branding, black riding gloves with a blue cuff band — with a distinct pose per service: wave (splash, welcome), thumbs-up (home), motorbike (GoRide), driving (GoCar), food bag (GoFood), parcel (GoSend), success and puzzled states. Draw order is deliberate (hair → face → fringe → helmet → features), so the brim overlaps the fringe and the visor never covers the eyes; the details stay legible at the 44px inline size. The food tiles are eight distinct dish illustrations drawn by [`tool/generate_assets.dart`](tool/generate_assets.dart), not one repeated glyph.
+- **The mascot** ([`lib/core/widgets/mascot_art.dart`](lib/core/widgets/mascot_art.dart)) is one rider character in an anime-illustration style — glossy deep-blue helmet with a violet visor flipped up onto the brow and a white G decal, dark-navy layered hair with a rim light and a fringe visible under the brim, royal-blue jacket with a chest flash and G + "GoMotion" branding, black riding gloves with a blue cuff band — with a distinct pose per service: wave (splash, welcome), thumbs-up (home), motorbike (GoRide), driving (GoCar), food bag (GoFood), parcel (GoSend), success and puzzled states. Draw order is deliberate (hair → face → fringe → helmet → features), so the brim overlaps the fringe and the visor never covers the eyes; the details stay legible at the 44px inline size. The food tiles are nine distinct dish and restaurant illustrations drawn by [`tool/generate_assets.dart`](tool/generate_assets.dart), not one repeated glyph.
 - **The launcher icons** — the browser favicon, the PWA icons, and every Android `mipmap-*` / adaptive-icon layer — are rendered from the same `GoMotionMarkPainter`, so the tab, a home-screen shortcut, and the splash signature can never disagree about the brand. Nothing is hand-exported from a design tool.
 
 ## Motion and interaction
@@ -133,7 +133,7 @@ tokens and stale-timer rejection, each journey flow end to end, real
 tap-through navigation, the motion primitives, and layout checks at 1.0x and
 1.3x text scale with reduced motion enabled.
 
-Current status: **192 tests passing, `flutter analyze` clean.**
+Current status: **209 tests passing, `flutter analyze` clean.**
 
 ## Build and release
 

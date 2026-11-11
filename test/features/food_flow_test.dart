@@ -30,6 +30,81 @@ _harness() async {
 }
 
 void main() {
+  group('GoFood browse filtering', () {
+    late FixtureBundle bundle;
+
+    setUpAll(() async {
+      TestWidgetsFlutterBinding.ensureInitialized();
+      bundle = await JsonFixtureRepository().load();
+    });
+
+    test('the fixed category list matches the reference board order', () {
+      expect(foodCategories, ['Asian', 'Western', 'Local', 'Dessert']);
+    });
+
+    test('no filter returns every bundled restaurant', () {
+      final all = filterRestaurants(bundle.restaurants);
+      expect(all.length, bundle.restaurants.length);
+    });
+
+    test('category filter keeps only matching kitchens', () {
+      final local = filterRestaurants(bundle.restaurants, category: 'Local');
+      expect(local, isNotEmpty);
+      expect(
+        local.every((restaurant) => restaurant.category == 'Local'),
+        isTrue,
+      );
+      expect(
+        local.map((restaurant) => restaurant.name),
+        contains('Rasa Nusantara'),
+      );
+      expect(
+        local.map((restaurant) => restaurant.name),
+        isNot(contains('Nori House')),
+      );
+    });
+
+    test('query matching is case-insensitive over name and category', () {
+      final byName = filterRestaurants(bundle.restaurants, query: 'NORI');
+      expect(byName.map((restaurant) => restaurant.name), ['Nori House']);
+
+      final byCategory = filterRestaurants(
+        bundle.restaurants,
+        query: 'dessert',
+      );
+      expect(byCategory, isNotEmpty);
+      expect(
+        byCategory.every((restaurant) => restaurant.category == 'Dessert'),
+        isTrue,
+      );
+    });
+
+    test('whitespace in the query is ignored', () {
+      expect(
+        filterRestaurants(bundle.restaurants, query: '  nori  '),
+        filterRestaurants(bundle.restaurants, query: 'nori'),
+      );
+    });
+
+    test('an unknown query yields an empty list for the empty state', () {
+      expect(filterRestaurants(bundle.restaurants, query: 'zzz'), isEmpty);
+    });
+
+    test('category and query compose with AND semantics', () {
+      final combined = filterRestaurants(
+        bundle.restaurants,
+        category: 'Western',
+        query: 'bowl',
+      );
+      expect(combined.map((restaurant) => restaurant.name), ['Daily Bowl']);
+
+      expect(
+        filterRestaurants(bundle.restaurants, category: 'Asian', query: 'bowl'),
+        isEmpty,
+      );
+    });
+  });
+
   group('GoFood flow', () {
     test('runs the full lifecycle to a delivered order', () async {
       final (container, clock, bundle) = await _harness();

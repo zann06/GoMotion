@@ -197,6 +197,80 @@ void main() {
     expect(find.text('Your demo cart'), findsOneWidget);
   });
 
+  testWidgets('GoFood browse shows the five reference-board categories', (
+    tester,
+  ) async {
+    await pumpApp(tester, AppRoutes.food);
+    await tester.pumpAndSettle();
+
+    expect(find.text('Popular Restaurants'), findsOneWidget);
+    expect(find.text('All'), findsOneWidget);
+    for (final category in const ['Asian', 'Western', 'Local', 'Dessert']) {
+      expect(find.text(category), findsOneWidget, reason: category);
+    }
+  });
+
+  testWidgets('GoFood category filter narrows to the matching kitchens', (
+    tester,
+  ) async {
+    await pumpApp(tester, AppRoutes.food);
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Local'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Rasa Nusantara'), findsOneWidget);
+    expect(find.text('Nori House'), findsNothing);
+    expect(find.text('Sweet Corner'), findsNothing);
+  });
+
+  testWidgets('GoFood See all expands the list and includes every kitchen', (
+    tester,
+  ) async {
+    await pumpApp(tester, AppRoutes.food);
+    await tester.pumpAndSettle();
+
+    expect(find.text('Pasta Corner'), findsNothing);
+
+    await tester.tap(find.text('See all'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('All demo restaurants'), findsOneWidget);
+    // The expanded list is a plain column inside the page scroll, so even the
+    // last row is present in the tree without scrolling.
+    expect(find.text('Pasta Corner'), findsOneWidget);
+    expect(find.text('Sweet Corner'), findsOneWidget);
+  });
+
+  testWidgets(
+    'GoFood search narrows the list and resets from the empty state',
+    (tester) async {
+      await pumpApp(tester, AppRoutes.food);
+      // The empty-state action sits low on the page, so a taller surface keeps
+      // it clear of the bottom navigation bar.
+      await tester.binding.setSurfaceSize(const Size(420, 1400));
+      await tester.pumpAndSettle();
+
+      await tester.enterText(find.byType(TextField), 'nori');
+      await tester.pumpAndSettle();
+
+      expect(find.text('Search results'), findsOneWidget);
+      expect(find.text('Nori House'), findsOneWidget);
+      expect(find.text('Daily Bowl'), findsNothing);
+
+      await tester.enterText(find.byType(TextField), 'zzz');
+      await tester.pumpAndSettle();
+
+      expect(find.text('No demo restaurants found'), findsOneWidget);
+
+      await tester.tap(find.text('Reset filters'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Popular Restaurants'), findsOneWidget);
+      expect(find.text('Nori House'), findsOneWidget);
+    },
+  );
+
   testWidgets('GoSend blocks an incomplete parcel with an inline error', (
     tester,
   ) async {
